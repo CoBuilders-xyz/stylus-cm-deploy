@@ -1,9 +1,12 @@
 [submodule "submodules/nitro-devnode"]
 	path = submodules/nitro-devnode
-	url = https://github.com/ifqbuilder/nitro-devnode.git
+	url = https://github.com/CoBuilders-xyz/nitro-devnode.git
 [submodule "submodules/nitro-testnode"]
 	path = submodules/nitro-testnode
-	url = https://github.com/ifqbuilder/nitro-testnode
+	url = https://github.com/CoBuilders-xyz/nitro-testnode
 [submodule "submodules/stylus-cm-backend"]
 	path = submodules/stylus-cm-backend
-	url = git@github.com:ifqbuilder/stylus-cm-backend.git
+	url = git@github.com:CoBuilders-xyz/stylus-cm-backend.git
+
+
+	
