@@ -4,7 +4,11 @@ repo_url: https://github.com/ifqbuilder/arb-research
 
 nav:
   - Home: index.md
-  - Notes: notes.md
+  - Dev Notes:
+      - Cache Manager Useful Info: devNotes/01-cmUsefulInfo.md
+      - Run Nitro Test Node: devNotes/02-nitroTestNodeRunAndAddresses.md
+      - CM interactions: devNotes/03-cacheManagerInteractions.md
+      - Guided Testing: devNotes/04-CmGuidedTesting.md
   - Repo Structure:
       - Repo Structure: repo-structure/index.md
   - Local Deployment:

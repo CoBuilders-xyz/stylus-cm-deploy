@@ -10,3 +10,6 @@
 
 
 	
+[submodule "submodules/nitro-contracts"]
+	path = submodules/nitro-contracts
+	url = git@github.com:CoBuilders-xyz/nitro-contracts.git

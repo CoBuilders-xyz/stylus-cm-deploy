@@ -1,2 +1,5 @@
 cache
 out
+bin
+target
+node_modules
