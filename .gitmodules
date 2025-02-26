@@ -13,3 +13,9 @@
 [submodule "submodules/nitro-contracts"]
 	path = submodules/nitro-contracts
 	url = git@github.com:CoBuilders-xyz/nitro-contracts.git
+[submodule "submodules/stylus-cm-frontend"]
+	path = submodules/stylus-cm-frontend
+	url = git@github.com:CoBuilders-xyz/stylus-cm-frontend.git
+[submodule "submodules/stylus-cm-contracts"]
+	path = submodules/stylus-cm-contracts
+	url = git@github.com:CoBuilders-xyz/stylus-cm-contracts.git
