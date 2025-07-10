@@ -1,3 +1,5 @@
+name: scm-ui
+
 networks:
   default:
     name: scm-network
@@ -14,24 +16,103 @@ services:
           memory: 1G
     ports:
       - 5432:5432
-    # volumes:
-    #   - ./db/init_db.sql:/docker-entrypoint-initdb.d/init.sql
-    environment:
-      - POSTGRES_USER=scm-db-user
-      - POSTGRES_PASSWORD=scm-db-pwd
-      - POSTGRES_DB=scm_db
+    env_file:
+      - ./.env.scm-db
     command:
       - 'postgres'
       - '-N'
       - '500'
+  scm-redis:
+    container_name: scm-redis
+    image: redis:latest
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 1G
+    ports:
+      - 6380:6379
+    command:
+      - 'redis-server'
+      - '--protected-mode'
+      - 'no'
+  scm-nginx:
+    container_name: scm-nginx
+    build:
+      context: ../../submodules/stylus-nginx
+      dockerfile: Dockerfile
+    ports:
+      - 8080:80
+    depends_on:
+      - scm-backend
+      - scm-engine
   scm-backend:
+    container_name: scm-backend
     build:
       context: ../../submodules/stylus-cm-backend
       dockerfile: Dockerfile
     volumes:
-      - ../../submodules/stylus-cm-backend/src:/app/src
-      - ../../submodules/stylus-cm-backend/.env:/app/.env
+      - ../../submodules/stylus-cm-backend:/app
+      - /app/node_modules
     ports:
       - 3000:3000
       - 9229:9229
-    command: ['npm', 'run', 'start:dev']
+    env_file:
+      - ./.env.backend
+    command: ['npm', 'run', 'start:dev:docker']
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    depends_on:
+      - scm-db
+      - scm-redis
+      - scm-engine
+
+  scm-engine-db:
+    container_name: scm-engine-db
+    image: postgres:15
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 1G
+    ports:
+      - 5433:5432
+    # volumes:
+    #   - ./db/init_db.sql:/docker-entrypoint-initdb.d/init.sql
+    env_file:
+      - ./.env.engine-db
+    command:
+      - 'postgres'
+      - '-N'
+      - '500'
+  scm-engine-redis:
+    container_name: scm-engine-redis
+    image: redis:latest
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 1G
+    ports:
+      - 6381:6379
+    command:
+      - 'redis-server'
+      - '--protected-mode'
+      - 'no'
+  scm-engine:
+    image: thirdweb/engine:latest
+    container_name: scm-engine
+    env_file:
+      - ./.env.engine
+    ports:
+      - 3005:3005
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+    depends_on:
+      - scm-engine-db
+      - scm-engine-redis
