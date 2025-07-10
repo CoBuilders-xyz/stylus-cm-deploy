@@ -1,17 +1,20 @@
 site_name: Stylus Cache Manager UI
 docs_dir: docs/en
-repo_url: https://github.com/ifqbuilder/arb-research
+repo_url: https://github.com/cobuilders-xyz/arb-research
+edit_uri: edit/main/mkdocs/docs/en
+site_url: https://cobuilders-xyz.github.io/arb-research
 
 nav:
   - Home: index.md
-  - Dev Notes:
-      - Cache Manager Useful Info: devNotes/01-cmUsefulInfo.md
-      - Run Nitro Test Node: devNotes/02-nitroTestNodeRunAndAddresses.md
-      - CM interactions: devNotes/03-cacheManagerInteractions.md
-      - Guided Testing: devNotes/04-CmGuidedTesting.md
-  - Repo Structure:
-      - Repo Structure: repo-structure/index.md
-  - Local Deployment:
+  - Getting Started:
+      - Cache Manager Info: getting-started/01-cmUsefulInfo.md
+      - Nitro Test Node: getting-started/02-nitroTestNodeRunAndAddresses.md
+      - CM interactions: getting-started/03-cacheManagerInteractions.md
+      - Guided Testing: getting-started/04-CmGuidedTesting.md
+  - Stylus CM Contracts:
+      - Overview: stylus-cm-contracts/overview.md
+      - Local Testing: stylus-cm-contracts/testing.md
+  - System Deployment (WIP):
       - Local Deployment: local-deployment/index.md
       - Docker Compose:
           - Docker Prerequisites: local-deployment/docker-compose/prerequisites.md
@@ -21,11 +24,14 @@ nav:
           - Kubernetes Prerequisites: local-deployment/kubernetes/prerequisites.md
           - Deployment:
               - System Deployment: local-deployment/kubernetes/deployment/system-deployment.md
-  - Testnet:
-      - Overview: testnet/index.md
-      - Explorers: testnet/explorers.md
-      - Playground: testnet/playground.md
-      - Bridge: testnet/bridge.md
+      # - Repo Structure:
+      #     - Repo Structure: repo-structure/index.md
+
+  # - Testnet:
+  #     - Overview: testnet/index.md
+  #     - Explorers: testnet/explorers.md
+  #     - Playground: testnet/playground.md
+  #     - Bridge: testnet/bridge.md
 
 theme:
   name: material
@@ -54,7 +60,7 @@ theme:
     - navigation.instant.progress
     - navigation.tabs
     # - navigation.sections
-    - navigation.expand
+    # - navigation.expand
     - navigation.indexes
     - navigation.path
     - toc.follow
