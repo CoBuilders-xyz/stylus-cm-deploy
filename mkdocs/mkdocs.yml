@@ -36,7 +36,7 @@ nav:
 theme:
   name: material
   logo: assets/cobuilders-logo.png
-  favicon: assets/cobuilders-logo.png
+  favicon: assets/cobuilders-favicon.png
   icon:
     repo: fontawesome/brands/github
   palette:
