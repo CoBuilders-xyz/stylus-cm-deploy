@@ -1,6 +1,3 @@
-[submodule "submodules/nitro-devnode"]
-	path = submodules/nitro-devnode
-	url = https://github.com/CoBuilders-xyz/nitro-devnode.git
 [submodule "submodules/nitro-testnode"]
 	path = submodules/nitro-testnode
 	url = https://github.com/CoBuilders-xyz/nitro-testnode
