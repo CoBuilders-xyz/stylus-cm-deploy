@@ -1,6 +1,6 @@
 # Local Deployment
 
-TODO
+[WIP]
 
 ## Docker Compose
 
