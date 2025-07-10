@@ -8,7 +8,7 @@ This interface provides developers with essential tools to inspect, bid, and man
 
 ## Quick Links
 
-- **App**: https://stylus-cm-frontend.vercel.app
+- **App**: https://stylus.cobuilders.xyz
 - **Docs**: https://cobuilders-xyz.github.io/stylus-cm-deploy/
 
 ## Feature Highlights
