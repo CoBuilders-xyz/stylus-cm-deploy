@@ -11,21 +11,21 @@ nav:
       - Nitro Test Node: getting-started/02-nitroTestNodeRunAndAddresses.md
       - CM interactions: getting-started/03-cacheManagerInteractions.md
       - Guided Testing: getting-started/04-CmGuidedTesting.md
-  - Stylus CM Contracts:
-      - Overview: stylus-cm-contracts/overview.md
-      - Local Testing: stylus-cm-contracts/testing.md
-  - System Deployment (WIP):
-      - Local Deployment: local-deployment/index.md
-      - Docker Compose:
-          - Docker Prerequisites: local-deployment/docker-compose/prerequisites.md
-          - Deployment:
-              - System Deployment: local-deployment/docker-compose/deployment/system-deployment.md
-      - Kubernetes:
-          - Kubernetes Prerequisites: local-deployment/kubernetes/prerequisites.md
-          - Deployment:
-              - System Deployment: local-deployment/kubernetes/deployment/system-deployment.md
-      # - Repo Structure:
-      #     - Repo Structure: repo-structure/index.md
+  # - Stylus CM Contracts:
+  #     - Overview: stylus-cm-contracts/overview.md
+  #     - Local Testing: stylus-cm-contracts/testing.md
+  # - System Deployment (WIP):
+  #     - Local Deployment: local-deployment/index.md
+  #     - Docker Compose:
+  #         - Docker Prerequisites: local-deployment/docker-compose/prerequisites.md
+  #         - Deployment:
+  #             - System Deployment: local-deployment/docker-compose/deployment/system-deployment.md
+  #     - Kubernetes:
+  #         - Kubernetes Prerequisites: local-deployment/kubernetes/prerequisites.md
+  #         - Deployment:
+  #             - System Deployment: local-deployment/kubernetes/deployment/system-deployment.md
+  # - Repo Structure:
+  #     - Repo Structure: repo-structure/index.md
 
   # - Testnet:
   #     - Overview: testnet/index.md
@@ -36,7 +36,7 @@ nav:
 theme:
   name: material
   logo: assets/cobuilders-logo.png
-  favicon: assets/cobuilders-logo.png
+  favicon: assets/cobuilders-favicon.png
   icon:
     repo: fontawesome/brands/github
   palette:

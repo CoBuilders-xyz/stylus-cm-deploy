@@ -1,4 +1,4 @@
-# Arbitrum Cache Manager GUI
+# Arbitrum Stylus Cache Manager GUI
 
 ## Overview
 
@@ -6,40 +6,30 @@ Our project is a GUI for managing Arbitrum’s Cache Manager, designed to simpli
 
 This interface provides developers with essential tools to inspect, bid, and manage advanced use cases, addressing the complexities of on-chain caching through a streamlined experience.
 
-## Key Features
+## Quick Links
 
-### Bidding Module
+- **App**: https://stylus-cm-frontend.vercel.app
+- **Docs**: https://cobuilders-xyz.github.io/stylus-cm-deploy/
 
-- One-click and automated bidding based on current cache demand.
-- Displays minimum bid required.
-- Allows developers to set maximum bids for automatic adjustments to maintain cache priority.
+## Feature Highlights
 
-### Alerts and Notifications
+- Automated bidding with up-to-date minimum bid suggestions
+- Instant alerts via Telegram, Slack, or custom webhooks
+- Live dashboard with cache metrics & historical trends
+- Open-source, self-hostable and multi-chain ready
 
-- Real-time updates via Telegram and Slack.
-- Webhooks to support future notification channels.
-- Notifies developers whenever a contract’s cache status changes, enabling proactive responses.
+## Cloning the Repository
 
-### Visualization and Charts
+Clone with sub-modules in one step:
 
-- Real-time dashboard displaying contract positions, bid amounts, and usage metrics.
-- Historical bid trends for data-driven decision-making.
-
-## Open-Source and Multi-Chain Support
-
-- Open-source and self-hostable design.
-- Orbit Chain developers can deploy their own instances if needed.
-- Seamless connection to multiple chains, including Arbitrum and custom Orbit Chains, eliminating the need for separate instances per chain.
-
-## Running the Project Locally
-
-As the tool is open source, developers can easily download the repository and run it locally. Follow the instructions in our mkdocs documentation to set up and deploy your own instance.
-
-For running mkdocs locally:
-
-```
-docker compose -f mkdocs/docker-compose.yaml up -d
+```bash
+git clone --recurse-submodules https://github.com/cobuilders-xyz/stylus-cm-deploy
 ```
 
-A web server will be running at http://localhost:8005 with all the documentation about this project.
-If you prefer, all Markdown (`.md`) files used by MkDocs for rendering are stored in `mkdocs/docs` folder.
+If you already cloned the repository without the `--recurse-submodules` flag you can initialise and pull the sub-modules afterwards with:
+
+```bash
+git submodule update --init --recursive
+```
+
+_For detailed local setup and advanced usage, please refer to the full documentation site linked above._
