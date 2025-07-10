@@ -16,3 +16,6 @@
 [submodule "submodules/stylus-cm-contracts"]
 	path = submodules/stylus-cm-contracts
 	url = git@github.com:CoBuilders-xyz/stylus-cm-contracts.git
+[submodule "submodules/stylus-cm-nginx"]
+	path = submodules/stylus-cm-nginx
+	url = https://github.com/CoBuilders-xyz/stylus-cm-nginx.git
