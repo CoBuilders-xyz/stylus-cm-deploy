@@ -5,7 +5,7 @@ hide:
 
 # **Welcome to the Stylus Cache Manager 🚀**
 
-This documentation is the **central knowledge base** for anyone working with the **Stylus Cache Manager (CM)** – from smart-contract developers and dev-ops engineers to testers and end-users running their own deployments.
+This documentation is meant for anyone working with the **Stylus Cache Manager (CM)** – from smart-contract developers and dev-ops engineers to testers and end-users running their own deployments.
 
 Stylus CM sits on top of Arbitrum’s **CacheManager** contract and provides everything you need to **reserve, monitor, and automatically maintain cache slots** for high-performance Stylus applications.
 
@@ -50,7 +50,7 @@ This repository is a **meta-project** that pulls together several sub-modules:
 
 Ready to dive in?
 
-1. Head over to **[Getting Started ➜ Cache Manager Info](getting-started/cache-manager-info.md)** for a conceptual overview.
+1. Head over to **[Getting Started ➜ Cache Manager Basics](getting-started/cache-manager-basics.md)** for a conceptual overview.
 2. Spin up a **local Arbitrum test node** and interact with CM by following **Guided Testing**.
 3. When you’re comfortable, deploy the **full system with Docker Compose** or explore other deployment options.
 
