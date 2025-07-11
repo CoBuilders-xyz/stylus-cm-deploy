@@ -8,9 +8,9 @@ nav:
   - Welcome: index.md
   - Getting Started:
       - Cache Manager Basics: getting-started/cache-manager-basics.md
-  #     - Stylus Cache Manager UI:
-  #         - Overview: dummy.md
-  #         - Common Interactions: dummy.md
+      - Stylus Cache Manager UI:
+          - Overview: getting-started/stylus-cache-manager-ui/overview.md
+          - Common Interactions: getting-started/stylus-cache-manager-ui/common-interactions.md
   #         - Alert Settings: dummy.md
   #         - Bidding Automation: dummy.md
 
