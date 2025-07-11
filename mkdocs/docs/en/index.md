@@ -1,45 +1,59 @@
 ---
 hide:
-  - navigation
+  - toc
 ---
 
-### **Welcome to the Stylus Cache Manager UI 🚀**
+# **Welcome to the Stylus Cache Manager 🚀**
 
-This documentation serves as the **go-to resource** for developers, testers, and users interacting with the **Stylus Cache Manager**. Whether you’re integrating smart contracts, setting up automation, or deploying the system, you’ll find everything you need here.
+This documentation is the **central knowledge base** for anyone working with the **Stylus Cache Manager (CM)** – from smart-contract developers and dev-ops engineers to testers and end-users running their own deployments.
 
----
-
-## 🔹 **What is the Cache Manager?**
-
-The **Stylus Cache Manager** optimizes contract execution by allowing contracts to reserve and maintain storage in the cache layer. This system enables faster access and **reduces gas costs** for frequently used contracts. However, contracts must actively **bid for cache space**—this is where our **automation** and **bidding logic** come into play.
-
-Our solution provides:  
-✅ **Smart contract interactions** for managing bids and cache slots.  
-✅ **Automated bidding** using Chainlink Automation.  
-✅ **A user-friendly dApp** to simplify contract management.
+Stylus CM sits on top of Arbitrum’s **CacheManager** contract and provides everything you need to **reserve, monitor, and automatically maintain cache slots** for high-performance Stylus applications.
 
 ---
 
-## 📌 **Getting Started**
+## 🔹 What is the Cache Manager?
 
-If you’re new to the system, follow these guides:
+On Arbitrum, stylus contracts can bid for dedicated space in a low-latency **WASM cache**. Holding a slot dramatically **reduces gas costs** and speeds up hot-path calls, but it requires managing periodic bids to keep the slot alive.
 
-📖 [**Cache Manager Info**](getting-started/01-cmUsefulInfo.md) – Understand the core mechanics of CacheManager.  
-⚙️ [**Nitro Test Node**](getting-started/02-nitroTestNodeRunAndAddresses.md) – Set up and interact with a local Nitro test node.  
-🔗 [**CM Interactions**](getting-started/03-cacheManagerInteractions.md) – Learn how to manually interact with CacheManager.  
-🛠️ [**Guided Testing**](getting-started/04-CmGuidedTesting.md) – Step-by-step testing workflow.
+Stylus Cache Manager simplifies this process by providing:
+
+- **Smart-contracts** that encapsulate bidding logic and escrow-based fund management.
+- **Chainlink Automation jobs** that keep your bids active 24/7.
+- **A full-featured web UI** with live dashboards, alerting, and one-click actions.
+- **Docker-first deployment scripts** so you can run the entire stack locally or on-prem.
 
 ---
 
-## 🏗️ **Project Components**
+## 🏗️ Project at a glance
 
-### 🔷 **Stylus CM Contracts**
+This repository is a **meta-project** that pulls together several sub-modules:
 
-- **[Overview](stylus-cm-contracts/overview.md)** – Dive into the contract architecture.
-- **[Local Testing](stylus-cm-contracts/testing.md)** – Set up and test contracts locally with Foundry & Hardhat.
+| Sub-module            | Description                                                |
+| --------------------- | ---------------------------------------------------------- |
+| `stylus-cm-contracts` | Solidity / Stylus contracts + Foundry tests                |
+| `stylus-cm-backend`   | REST & WebSocket API powering the UI and automation agents |
+| `stylus-cm-frontend`  | Next.js dApp for interacting with Cache Manager            |
+| `stylus-cm-nginx`     | Reverse-proxy with TLS & static assets                     |
+| `nitro-testnode`      | Arbitrum Nitro local node + Blockscout explorer            |
 
-### 🔷 **System Deployment (WIP)**
+---
 
-- **[Local Deployment](local-deployment/index.md)** – Deploy and test the system in a local environment.
-- **[Docker Deployment](local-deployment/docker-compose/deployment/system-deployment.md)** – Spin up the system using **Docker Compose**.
-- **[Kubernetes Deployment](local-deployment/kubernetes/deployment/system-deployment.md)** – Run the system on a **K8s cluster** for scalability.
+## 🚀 Quick links
+
+- Public dApp: **<https://stylus.cobuilders.xyz>**
+- Source code: **<https://github.com/cobuilders-xyz/stylus-cm-deploy>**
+- Live docs (this site): **<https://cobuilders-xyz.github.io/stylus-cm-deploy/>**
+
+---
+
+## 📌 Next steps
+
+Ready to dive in?
+
+1. Head over to **[Getting Started ➜ Cache Manager Info](getting-started/cache-manager-info.md)** for a conceptual overview.
+2. Spin up a **local Arbitrum test node** and interact with CM by following **Guided Testing**.
+3. When you’re comfortable, deploy the **full system with Docker Compose** or explore other deployment options.
+
+Use the navigation panel on the left (or top-bar on mobile) to explore every part of Stylus Cache Manager.
+
+> 💡 **Tip:** Documentation is a work in progress. If you spot an issue or want to contribute, open a PR or file an issue on GitHub!

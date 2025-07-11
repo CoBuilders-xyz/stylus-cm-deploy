@@ -1,37 +1,26 @@
-site_name: Stylus Cache Manager UI
+site_name: Stylus Cache Manager
 docs_dir: docs/en
-repo_url: https://github.com/cobuilders-xyz/arb-research
+repo_url: https://github.com/cobuilders-xyz/stylus-cm-deploy
 edit_uri: edit/main/mkdocs/docs/en
-site_url: https://cobuilders-xyz.github.io/arb-research
+site_url: https://cobuilders-xyz.github.io/stylus-cm-deploy
 
 nav:
-  - Home: index.md
+  - Welcome: index.md
   - Getting Started:
-      - Cache Manager Info: getting-started/01-cmUsefulInfo.md
-      - Nitro Test Node: getting-started/02-nitroTestNodeRunAndAddresses.md
-      - CM interactions: getting-started/03-cacheManagerInteractions.md
-      - Guided Testing: getting-started/04-CmGuidedTesting.md
-  # - Stylus CM Contracts:
-  #     - Overview: stylus-cm-contracts/overview.md
-  #     - Local Testing: stylus-cm-contracts/testing.md
-  # - System Deployment (WIP):
-  #     - Local Deployment: local-deployment/index.md
-  #     - Docker Compose:
-  #         - Docker Prerequisites: local-deployment/docker-compose/prerequisites.md
-  #         - Deployment:
-  #             - System Deployment: local-deployment/docker-compose/deployment/system-deployment.md
-  #     - Kubernetes:
-  #         - Kubernetes Prerequisites: local-deployment/kubernetes/prerequisites.md
-  #         - Deployment:
-  #             - System Deployment: local-deployment/kubernetes/deployment/system-deployment.md
-  # - Repo Structure:
-  #     - Repo Structure: repo-structure/index.md
+      - Cache Manager Basics: getting-started/cache-manager-basics.md
+  #     - Stylus Cache Manager UI:
+  #         - Overview: dummy.md
+  #         - Common Interactions: dummy.md
+  #         - Alert Settings: dummy.md
+  #         - Bidding Automation: dummy.md
 
-  # - Testnet:
-  #     - Overview: testnet/index.md
-  #     - Explorers: testnet/explorers.md
-  #     - Playground: testnet/playground.md
-  #     - Bridge: testnet/bridge.md
+  # - Local Deployment:
+  #     - Docker Compose:
+  #         - Arbitrum Local Testnode:
+  #             - Overview: dummy.md
+  #             - CM interactions: dummy.md
+  #             - Guided Testing: dummy.md
+  #         - Stylus Cache Manager UI: dummy.md
 
 theme:
   name: material
@@ -56,11 +45,11 @@ theme:
     text: Roboto
   language: en
   features:
-    - navigation.instant
-    - navigation.instant.progress
-    - navigation.tabs
-    # - navigation.sections
-    # - navigation.expand
+    # - navigation.instant
+    # - navigation.instant.progress
+    # - navigation.tabs
+    - navigation.sections
+    - navigation.expand
     - navigation.indexes
     - navigation.path
     - toc.follow
@@ -90,7 +79,7 @@ extra:
     deprecated: Deprecated
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/ifqbuilder/arb-research
+      link: https://github.com/cobuilders-xyz/stylus-cm-deploy
     - icon: fontawesome/brands/x-twitter
       link: https://x.com/
 
