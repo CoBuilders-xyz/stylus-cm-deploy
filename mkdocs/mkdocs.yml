@@ -8,11 +8,15 @@ nav:
   - Welcome: index.md
   - Getting Started:
       - Cache Manager Basics: getting-started/cache-manager-basics.md
-      - Stylus Cache Manager UI:
-          - Overview: getting-started/stylus-cache-manager-ui/overview.md
-          - Common Interactions: getting-started/stylus-cache-manager-ui/common-interactions.md
-  #         - Alert Settings: dummy.md
-  #         - Bidding Automation: dummy.md
+  - Stylus Cache Manager UI:
+      - Overview: getting-started/stylus-cache-manager-ui/overview.md
+      - Tutorials:
+          - Login Wallet: getting-started/stylus-cache-manager-ui/common-interactions/login-wallet.md
+          - My Contracts: getting-started/stylus-cache-manager-ui/common-interactions/my-contracts.md
+          - Place a Bid: getting-started/stylus-cache-manager-ui/common-interactions/place-bid.md
+          - Bid Automation: getting-started/stylus-cache-manager-ui/common-interactions/bid-automation.md
+          - Gas Tank: getting-started/stylus-cache-manager-ui/common-interactions/gas-tank.md
+          - Alerts: getting-started/stylus-cache-manager-ui/common-interactions/alerts.md
 
   # - Local Deployment:
   #     - Docker Compose:
@@ -94,8 +98,8 @@ markdown_extensions:
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - pymdownx.emoji:
-      emoji_generator: !!python/name:material.extensions.emoji.to_svg
       emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span

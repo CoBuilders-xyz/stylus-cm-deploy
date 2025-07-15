@@ -1,3 +1,7 @@
+---
+icon: material/web
+---
+
 # **🖥️ Stylus Cache Manager UI: Overview**
 
 > **Take control of your contract caching** with a modern, intuitive web app. The Stylus Cache Manager UI brings all the tools you need—wallet login, contract management, bidding, automation, alerts, and analytics—together in one place.

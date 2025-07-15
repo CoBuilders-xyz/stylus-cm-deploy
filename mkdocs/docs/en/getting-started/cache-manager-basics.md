@@ -1,7 +1,3 @@
----
-icon: material/database
----
-
 # **🔗 Cache Manager Basics**
 
 > **Welcome!** Here's how the Cache Manager helps your contracts run faster, cheaper, and more reliably—plus how to find and use it.
