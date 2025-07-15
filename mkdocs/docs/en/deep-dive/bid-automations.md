@@ -10,48 +10,25 @@ Bid automations eliminate the need for manual bid management by automatically pl
 
 ## **What Happens When You Enable Automation**
 
-When you set up automated bidding through the frontend, you're configuring a system that:
+When you set up automated bidding through the frontend, you're configuring a system that continuously monitors cache conditions, evaluates your contracts for bidding eligibility, automatically places bids when conditions are met, and manages your funds through a secure escrow system.
 
-1. **Monitors cache conditions** continuously
-2. **Evaluates your contracts** for bidding eligibility
-3. **Automatically places bids** when conditions are met
-4. **Manages your funds** through a secure escrow system
-
-### **The Automation Architecture**
-
-```
-Frontend Configuration → Backend Monitoring → Smart Contract Execution → Cache Management
-```
+The automation architecture flows from your frontend configuration to backend monitoring, then to smart contract execution, and finally to cache management. This creates a seamless pipeline that handles all the complexity of cache management without requiring your constant attention.
 
 ---
 
 ## **System Components**
 
-### **1. Frontend Interface**
+### **Frontend Interface**
 
-The "Automated Bidding" section in the frontend allows you to:
+The "Automated Bidding" section in the frontend serves as your control center where you configure which contracts to automate, set the maximum bid amounts you're willing to pay, fund your automation balance with ETH, enable or disable automation per contract, and monitor performance and fund usage. This interface abstracts away all the underlying complexity while giving you full control over your automation settings.
 
-- **Configure contracts** for automation
-- **Set maximum bid amounts** you're willing to pay
-- **Fund your automation balance** with ETH
-- **Enable/disable automation** per contract
-- **Monitor performance** and fund usage
+### **Backend Monitoring Service**
 
-### **2. Backend Monitoring Service**
+A backend service runs every minute, continuously scanning all automated contracts across all users. It checks cache utilization and market conditions, applies bidding logic to determine which contracts need bids, and submits batch transactions to the automation contract. This service acts as the brain of the automation system, making intelligent decisions about when and how much to bid.
 
-A backend service runs every minute to:
+### **Smart Contract System**
 
-- **Scan all automated contracts** across all users
-- **Check cache utilization** and market conditions
-- **Apply bidding logic** to determine which contracts need bids
-- **Submit batch transactions** to the automation contract
-
-### **3. Smart Contract System**
-
-Two contracts work together:
-
-- **CacheManagerAutomation**: Manages user configurations and executes bids
-- **BiddingEscrow**: Securely holds user funds for automated bidding
+Two contracts work together to handle the automation: the CacheManagerAutomation contract manages user configurations and executes bids, while the BiddingEscrow contract securely holds user funds for automated bidding. This dual-contract architecture ensures both functionality and security.
 
 ---
 
@@ -59,39 +36,42 @@ Two contracts work together:
 
 ### **Cache Utilization Monitoring**
 
-The system only activates when the cache is nearly full:
+The system activates based on cache utilization levels, but the bidding strategy changes at the 98% threshold. Below 98% utilization, the system places 0 ETH bids - you still need to bid to get cached, but the bid amount is zero since there's available cache space. Above 98% utilization, the system calculates competitive bid amounts based on market conditions.
 
 ```typescript
-const CACHE_THRESHOLD = 98; // Automation starts when cache is 98% full
+const CACHE_THRESHOLD = 98; // Automation threshold
+
+if (cacheUtilization < 98) {
+  bidAmount = 0; // Bid 0 ETH for free caching
+} else {
+  bidAmount = calculateCompetitiveBid(); // Calculate strategic bid
+}
 ```
 
-- **Below 98%**: No automated bids (cache has free space)
-- **Above 98%**: Automation system activates
+This approach ensures you only pay when the cache is actually competitive, while still maintaining your cache position through zero-cost bids when space is available.
 
 ### **Contract Evaluation Process**
 
-For each automated contract, the system checks:
+For each automated contract, the system performs a comprehensive evaluation:
 
 1. **Is the contract still deployed?** (address validation)
 2. **Is it already cached?** (skip if already in cache)
-3. **Is automation enabled?** (user configuration)
-4. **Is there sufficient balance?** (escrow funds check)
+3. **Is automation enabled?** (user configuration check)
+4. **Is there sufficient balance?** (escrow funds validation)
 5. **Does the calculated bid meet requirements?** (minimum bid validation)
 
 ### **Bid Amount Calculation**
 
-When automation triggers, the system calculates bid amounts designed to:
-
-- **Maintain cache position** for approximately 30 days
-- **Account for time decay** in the bid calculation
-- **Stay within user limits** (never exceed max bid)
+When automation triggers above 98% cache utilization, the system calculates bid amounts with a specific strategy: the bid value is designed to decay down to the minimum bid in approximately one month, based on your contract size and the current decay rate.
 
 ```typescript
-// Simplified calculation logic
+// Calculate bid that decays to minimum in 30 days
 const targetDuration = 30 * 24 * 60 * 60; // 30 days in seconds
 const calculatedBid = minBid + decayRate * targetDuration;
 const finalBid = Math.min(calculatedBid, userMaxBid);
 ```
+
+This calculation ensures your contract will remain competitively positioned throughout the decay period, giving you roughly a month of cache retention before needing another bid, while still respecting your spending boundaries.
 
 ---
 
@@ -99,20 +79,7 @@ const finalBid = Math.min(calculatedBid, userMaxBid);
 
 ### **Secure Fund Storage**
 
-When you fund your automation, ETH is stored in a secure escrow contract:
-
-- **Only the automation system** can withdraw funds for bidding
-- **You maintain control** to withdraw unused funds at any time
-- **Funds are isolated** per user with no cross-contamination
-
-### **Automated Fund Usage**
-
-The system automatically:
-
-- **Withdraws exact bid amounts** from your escrow when needed
-- **Tracks fund usage** for transparency
-- **Prevents overdrafts** by checking balance before bidding
-- **Returns unused funds** if bids fail
+When you fund your automation, ETH is stored in a secure escrow contract with carefully designed access controls. Only the automation system can withdraw funds for bidding purposes, while you maintain complete control to withdraw unused funds at any time. Your funds are isolated per user with no cross-contamination, ensuring security and preventing any mixing of user balances.
 
 ---
 
@@ -120,23 +87,11 @@ The system automatically:
 
 ### **Every Minute Execution**
 
-The automation service follows this process:
-
-1. **Fetch All Configurations**: Retrieve automated contracts from all users
-2. **Evaluate Cache State**: Check current cache utilization
-3. **Apply Selection Logic**: Determine which contracts need bids
-4. **Batch Processing**: Group contracts into efficient batches
-5. **Submit Transactions**: Send batch bid transactions to the blockchain
-6. **Monitor Results**: Track success/failure and handle retries
+The automation service follows a systematic process every minute. It begins by fetching all configurations to retrieve automated contracts from all users, then evaluates the current cache state by checking utilization levels. The system applies selection logic to determine which contracts need bids, groups contracts into efficient batches for processing, submits batch bid transactions to the blockchain, and monitors results to track success or failure while handling retries as needed.
 
 ### **Batch Processing Efficiency**
 
-Instead of individual transactions, the system:
-
-- **Groups up to 50 contracts** per batch transaction
-- **Reduces gas costs** through batch processing
-- **Handles failures gracefully** with retry logic
-- **Provides detailed logging** for transparency
+Instead of individual transactions, the system employs batch processing for maximum efficiency. It groups up to 50 contracts per batch transaction, significantly reducing gas costs through this batching approach. The system handles failures gracefully with built-in retry logic and provides detailed logging for complete transparency into all operations.
 
 ---
 
@@ -144,45 +99,11 @@ Instead of individual transactions, the system:
 
 ### **Your Configuration**
 
-Through the frontend, you set:
-
-- **Contract addresses** to automate
-- **Maximum bid amounts** per contract
-- **Automation enable/disable** status
-- **Initial funding** for the escrow
+Through the frontend, you set the foundational parameters that guide the automation system. You specify which contract addresses to automate, define maximum bid amounts per contract, control automation enable/disable status for each contract, and provide initial funding for the escrow system.
 
 ### **Automatic Operations**
 
-The system handles:
-
-- **Market monitoring** and cache utilization tracking
-- **Bid timing** based on cache conditions
-- **Amount calculation** within your limits
-- **Transaction execution** and gas management
-- **Fund management** and balance tracking
-- **Error handling** and retry logic
-
----
-
-## **Monitoring and Transparency**
-
-### **Performance Tracking**
-
-The system provides visibility into:
-
-- **Successful automated bids** placed for your contracts
-- **Fund utilization** and remaining balance
-- **Batch processing results** and success rates
-- **Contract cache status** updates
-
-### **Balance Management**
-
-You can monitor through the frontend:
-
-- **Current escrow balance** in real-time
-- **Recent fund usage** for automated bids
-- **Recommended funding levels** based on your configuration
-- **Withdrawal capabilities** for unused funds
+The system handles all operational aspects without your intervention. It continuously monitors market conditions and cache utilization, determines optimal bid timing based on cache conditions, calculates appropriate bid amounts within your specified limits, manages transaction execution and gas optimization, tracks fund management and balance updates, and implements comprehensive error handling with retry logic.
 
 ---
 
@@ -190,39 +111,15 @@ You can monitor through the frontend:
 
 ### **24/7 Monitoring**
 
-- **Continuous surveillance** of cache conditions
-- **Immediate response** when bidding is needed
-- **No manual intervention** required
+The system provides continuous surveillance of cache conditions, ensuring immediate response when bidding is needed without requiring any manual intervention on your part. This round-the-clock monitoring means you never miss opportunities or face unexpected evictions.
 
 ### **Optimized Timing**
 
-- **Smart activation** only when cache is competitive
-- **Efficient batch processing** for cost savings
-- **Retry logic** for failed transactions
+The automation employs smart activation that only triggers when cache conditions are truly competitive, uses efficient batch processing for significant cost savings, and implements retry logic for failed transactions to ensure reliability.
 
 ### **Risk Management**
 
-- **Controlled spending** within your limits
-- **Secure fund storage** in escrow
-- **Transparent operations** with full logging
-
----
-
-## **Setting Up Through the Frontend**
-
-### **Initial Configuration**
-
-1. **Navigate to Automated Bidding** section in your contract view
-2. **Set maximum bid amount** you're comfortable paying
-3. **Enable automation** for the contract
-4. **Fund your escrow** with initial ETH deposit
-
-### **Ongoing Management**
-
-- **Monitor balance** and add funds as needed
-- **Adjust max bid amounts** based on market conditions
-- **Enable/disable automation** as requirements change
-- **Withdraw unused funds** when no longer needed
+The system maintains controlled spending within your predefined limits, provides secure fund storage in the escrow contract, and ensures transparent operations with comprehensive logging of all activities.
 
 ---
 
@@ -230,21 +127,15 @@ You can monitor through the frontend:
 
 ### **Funding Strategy**
 
-- **Maintain adequate balance** (2-3x your max bid)
-- **Monitor fund consumption** patterns
-- **Set up balance alerts** for low funds
+Maintain an adequate balance in your escrow, typically 2-3 times your maximum bid amount, to ensure uninterrupted service. Monitor your fund consumption patterns to understand your usage and set up balance alerts for low funds to avoid service interruptions.
 
 ### **Configuration Management**
 
-- **Start with conservative** max bid amounts
-- **Enable selectively** for critical contracts only
-- **Review performance** regularly and adjust
+Start with conservative maximum bid amounts and adjust based on performance data. Enable automation selectively for your most critical contracts only, and review performance regularly to make informed adjustments to your settings.
 
 ### **Cost Optimization**
 
-- **Use mid-risk bid amounts** for balanced cost/safety
-- **Monitor cache competition** and adjust accordingly
-- **Consider seasonal patterns** in cache usage
+Use mid-risk bid amounts for a balanced approach between cost and safety. Monitor cache competition levels and adjust your strategy accordingly, and consider seasonal patterns in cache usage that might affect your bidding strategy.
 
 ---
 
