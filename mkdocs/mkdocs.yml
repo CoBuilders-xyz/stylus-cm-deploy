@@ -25,13 +25,13 @@ nav:
           - Eviction Risk: deep-dive/eviction-risk.md
           - Place Bid: deep-dive/place-bid.md
           - Bid Automations: deep-dive/bid-automations.md
-      - Deployment:
-          - Docker:
-              - Stylus Cache Manager UI: dummy.md
-          - Arbitrum Local Testnode:
-              - Overview: dummy.md
-              - CM interactions: dummy.md
-              - Guided Testing: dummy.md
+      # - Deployment:
+      #     - Docker:
+      #         - Stylus Cache Manager UI: dummy.md
+      #     - Arbitrum Local Testnode:
+      #         - Overview: dummy.md
+      #         - CM interactions: dummy.md
+      #         - Guided Testing: dummy.md
 
 theme:
   name: material
