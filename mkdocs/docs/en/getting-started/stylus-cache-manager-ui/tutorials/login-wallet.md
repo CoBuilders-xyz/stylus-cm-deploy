@@ -3,7 +3,7 @@ icon: material/login
 hide: toc
 ---
 
-# **Common Interactions**
+# **Tutorials**
 
 > **Get started fast!** Here's how to use the Stylus Cache Manager UI for the most important actions—step by step, with visuals to guide you.
 

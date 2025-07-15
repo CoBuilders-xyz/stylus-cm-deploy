@@ -8,23 +8,30 @@ nav:
   - Welcome: index.md
   - Getting Started:
       - Cache Manager Basics: getting-started/cache-manager-basics.md
-  - Stylus Cache Manager UI:
-      - Overview: getting-started/stylus-cache-manager-ui/overview.md
-      - Tutorials:
-          - Login Wallet: getting-started/stylus-cache-manager-ui/common-interactions/login-wallet.md
-          - My Contracts: getting-started/stylus-cache-manager-ui/common-interactions/my-contracts.md
-          - Place a Bid: getting-started/stylus-cache-manager-ui/common-interactions/place-bid.md
-          - Bid Automation: getting-started/stylus-cache-manager-ui/common-interactions/bid-automation.md
-          - Gas Tank: getting-started/stylus-cache-manager-ui/common-interactions/gas-tank.md
-          - Alerts: getting-started/stylus-cache-manager-ui/common-interactions/alerts.md
-
-  # - Local Deployment:
-  #     - Docker Compose:
-  #         - Arbitrum Local Testnode:
-  #             - Overview: dummy.md
-  #             - CM interactions: dummy.md
-  #             - Guided Testing: dummy.md
-  #         - Stylus Cache Manager UI: dummy.md
+      - Stylus Cache Manager UI:
+          - Overview: getting-started/stylus-cache-manager-ui/overview.md
+          - Tutorials:
+              - Login Wallet: getting-started/stylus-cache-manager-ui/tutorials/login-wallet.md
+              - My Contracts: getting-started/stylus-cache-manager-ui/tutorials/my-contracts.md
+              - Place a Bid: getting-started/stylus-cache-manager-ui/tutorials/place-bid.md
+              - Bid Automation: getting-started/stylus-cache-manager-ui/tutorials/bid-automation.md
+              - Gas Tank: getting-started/stylus-cache-manager-ui/tutorials/gas-tank.md
+              - Alerts: getting-started/stylus-cache-manager-ui/tutorials/alerts.md
+  - Deep Dive:
+      - Overview: deep-dive/overview.md
+      - Fundamentals:
+          - Effective Bid: deep-dive/effective-bid.md
+          - Bid suggestions: deep-dive/bid-suggestions.md
+          - Eviction Risk: deep-dive/eviction-risk.md
+          - Place Bid: deep-dive/place-bid.md
+          - Bid Automations: deep-dive/bid-automations.md
+      - Deployment:
+          - Docker:
+              - Stylus Cache Manager UI: dummy.md
+          - Arbitrum Local Testnode:
+              - Overview: dummy.md
+              - CM interactions: dummy.md
+              - Guided Testing: dummy.md
 
 theme:
   name: material
@@ -53,7 +60,7 @@ theme:
     # - navigation.instant.progress
     # - navigation.tabs
     - navigation.sections
-    - navigation.expand
+    # - navigation.expand
     - navigation.indexes
     - navigation.path
     - toc.follow
