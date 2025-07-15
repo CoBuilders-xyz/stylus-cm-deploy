@@ -10,24 +10,65 @@ icon: material/gesture-tap-button
 
 ## **🔐 1. Login with Wallet**
 
-!!! example "Login with your wallet"
+Open the [Stylus Cache Manager](https://stylus.cobuilders.xyz) web app.
 
-1. Open the Stylus Cache Manager web app.
-2. Click the **Connect Wallet** button in the top right corner.
-3. Select your wallet provider (e.g., MetaMask, WalletConnect).
-4. Approve the connection in your wallet popup.
-5. When prompted, sign the authentication message to log in securely.
+Click the **Connect Wallet** button in the top right corner.
+
+<figure markdown="span">
+  ![Connect Wallet Button](./assets/connect-wallet.png){ width="700" }
+</figure>
+
+Select your wallet provider (e.g., MetaMask, WalletConnect).
+
+<figure markdown="span">
+  ![Connect Wallet App](./assets/connect-wallet-app.png){ width="700" }
+</figure>
+
+Approve the connection in your wallet popup.
+
+<figure markdown="span">
+  ![Connect Wallet Action](./assets/connect-wallet-action.png){ width="700" }
+</figure>
+
+When prompted, sign the authentication message to log in securely.
+
+<figure markdown="span">
+  ![Connect Wallet Sign](./assets/connect-wallet-sign.png){ width="700" }
+</figure>
 
 ---
 
 ## **📋 2. Add a Contract to "My Contracts"**
 
-!!! example "Add a contract to your dashboard"
+After logging in, go to the **My Contracts** section from the navbar and Click **+ Add Contract** button.
 
-1. After logging in, go to the **My Contracts** section from the sidebar or dashboard.
-2. Click **Add Contract** or the "+" button.
-3. Enter your contract address and (optionally) a label or description.
-4. Click **Add Contract**. The contract will now appear in your list.
+<figure markdown="span">
+  ![My Contracts Section](./assets/my-contracts-section.png){ width="700" }
+</figure>
+
+Enter your contract address
+
+<figure markdown="span">
+  ![My Contracts Address](./assets/my-contracts-address.png){ width="700" }
+</figure>
+
+and (optionally) a label or description.
+
+<figure markdown="span">
+  ![My Contracts Name](./assets/my-contracts-name.png){ width="700" }
+</figure>
+
+Click **Add Contract**. The contract will now appear in your list.
+
+<figure markdown="span">
+  ![My Contracts Name](./assets/my-contracts-redirect.png){ width="700" }
+</figure>
+
+When clicking a contract, details panel will show up
+
+<figure markdown="span">
+  ![My Contracts Name](./assets/my-contracts-details.png){ width="700" }
+</figure>
 
 ---
 

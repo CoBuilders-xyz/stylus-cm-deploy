@@ -18,9 +18,9 @@ On Arbitrum, stylus contracts can bid for dedicated space in a low-latency **WAS
 Stylus Cache Manager simplifies this process by providing:
 
 - **Smart-contracts** that encapsulate bidding logic and escrow-based fund management.
-- **Chainlink Automation jobs** that keep your bids active 24/7.
+- **Automation jobs** that keep your bids active 24/7.
 - **A full-featured web UI** with live dashboards, alerting, and one-click actions.
-- **Docker-first deployment scripts** so you can run the entire stack locally or on-prem.
+- **Deployment scripts** so you can run the entire stack locally or on-prem.
 
 ---
 
@@ -28,13 +28,13 @@ Stylus Cache Manager simplifies this process by providing:
 
 This repository is a **meta-project** that pulls together several sub-modules:
 
-| Sub-module            | Description                                                |
-| --------------------- | ---------------------------------------------------------- |
-| `stylus-cm-contracts` | Solidity / Stylus contracts + Foundry tests                |
-| `stylus-cm-backend`   | REST & WebSocket API powering the UI and automation agents |
-| `stylus-cm-frontend`  | Next.js dApp for interacting with Cache Manager            |
-| `stylus-cm-nginx`     | Reverse-proxy with TLS & static assets                     |
-| `nitro-testnode`      | Arbitrum Nitro local node + Blockscout explorer            |
+| Sub-module            | Description                                                 |
+| --------------------- | ----------------------------------------------------------- |
+| `stylus-cm-contracts` | Solidity / Stylus contracts + tests                         |
+| `stylus-cm-backend`   | REST & WebSocket API powering the UI and automation agents  |
+| `stylus-cm-frontend`  | Next.js dApp for interacting with Cache Manager and Backend |
+| `stylus-cm-nginx`     | Reverse-proxy with TLS & static assets                      |
+| `nitro-testnode`      | Arbitrum Nitro local node for testing                       |
 
 ---
 
@@ -54,6 +54,6 @@ Ready to dive in?
 2. Spin up a **local Arbitrum test node** and interact with CM by following **Guided Testing**.
 3. When you’re comfortable, deploy the **full system with Docker Compose** or explore other deployment options.
 
-Use the navigation panel on the left (or top-bar on mobile) to explore every part of Stylus Cache Manager.
+Use the navigation panel to explore every part of Stylus Cache Manager.
 
 > 💡 **Tip:** Documentation is a work in progress. If you spot an issue or want to contribute, open a PR or file an issue on GitHub!

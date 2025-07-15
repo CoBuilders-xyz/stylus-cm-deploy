@@ -41,6 +41,10 @@ You can retrieve the contract address for any network using the CLI:
 cargo stylus cache status --endpoint=<RPC_ENDPOINT>
 ```
 
+!!! tip "Get Arbitrum Stylus Cli"
+
+    If you dont have stylus-cli yet, you can get it following [Arbitrum docs](https://docs.arbitrum.io/stylus/using-cli)
+
 #### **Known Addresses**
 
 | **Network**             | **Cache Manager Address**                    |

@@ -24,7 +24,7 @@ icon: material/web
 ## **🏗️ How it works**
 
 - **Frontend:** Built with Next.js, React, and RainbowKit for wallet integration. Connects to the backend via REST APIs.
-- **Backend:** Handles authentication, contract storage, bidding logic, alerting, and analytics.
+- **Backend:** Handles authentication, contract storage, automated bidding logic, alerting, and analytics.
 - **Smart Contracts:** Automate cache management and secure bidding on-chain.
 
 ---
