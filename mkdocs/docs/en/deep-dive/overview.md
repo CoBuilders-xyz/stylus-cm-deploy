@@ -1,7 +1,3 @@
----
-icon: material/compass
----
-
 # **Deep Dive Overview**
 
 The Stylus Cache Manager frontend provides a user-friendly interface for interacting with the underlying cache bidding system, enhanced with additional features like automated bidding and monitoring alerts. These tools help you manage your contract's cache status more effectively than direct contract interaction.
