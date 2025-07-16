@@ -63,8 +63,6 @@ function _toBid(uint256 value) internal view returns (uint192 bid) {
 
 ## **Why Does It Matter?**
 
-!!! warning "Explain Better"
-
 - The effective bid is used to determine a contract's position in the cache queue.
 - If your effective bid is outbid by another contract, your contract risks eviction from the cache.
 - Monitoring the effective bid is essential for understanding your place in the cache queue.
