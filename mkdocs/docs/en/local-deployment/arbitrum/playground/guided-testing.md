@@ -58,7 +58,7 @@ cast send $CM_ADDRESS "placeBid(address)" $SC_ADD --rpc-url $RPC --private-key $
 
 ---
 
-## **📝 Test Scenario 3: Cache Competition**
+## **📝 Test Scenario 2: Cache Competition**
 
 This scenario demonstrates how contract eviction works when cache space is limited.
 
