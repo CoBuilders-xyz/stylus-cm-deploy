@@ -1,0 +1,55 @@
+# Test Node Data
+
+## Essential Connection Information
+
+### RPC Endpoints
+
+- **HTTP RPC**: `http://localhost:8547`
+- **WebSocket RPC**: `ws://localhost:8548`
+
+### Prefunded Account
+
+```yaml
+ADDRESS: 0x3f1Eae7D46d88F08fc2F8ed27FCb2AB183EB2d0E
+PRIVATE_KEY: 0xb6b15c8cb491557369f3c7d2c287b053eb229daa9c22138887752191c9520659
+```
+
+## Key Contract Addresses
+
+### Cache Manager
+
+```yaml
+CACHE_MANAGER: 0x0f1F89AAF1c6fDb7ff9D361E4388F5F3997f12A8
+```
+
+### Precompiles
+
+```yaml
+ARBWASM_PRECOMPILE: 0x0000000000000000000000000000000000000071
+ARBWASMCACHE_PRECOMPILE: 0x0000000000000000000000000000000000000072
+```
+
+## Additional Important Accounts
+
+### System Accounts
+
+```yaml
+SEQUENCER: 0xe2148eE53c0755215Df69b2616E552154EdC584f
+L2_OWNER: 0x5E1497dD1f08C87b2d8FE23e9AAB6c1De833D927
+VALIDATOR: 0x6A568afe0f82d34759347bb36F14A6bB171d2CBe
+```
+
+## Core Contract Addresses
+
+### Rollup Infrastructure
+
+```yaml
+ROLLUP_PROXY: 0x7d98BA231d29D5C202981542C0291718A7358c63
+INBOX_PROXY: 0x9f8c1c641336A371031499e3c362e40d58d0f254
+BRIDGE_PROXY: 0x5eCF728ffC5C5E802091875f96281B5aeECf6C49
+SEQUENCER_INBOX: 0x18d19C5d3E685f5be5b9C86E097f0E439285D216
+```
+
+---
+
+> **Note**: All addresses and keys are for local testing only. Never use these in production environments.
