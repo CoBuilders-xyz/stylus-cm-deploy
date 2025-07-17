@@ -27,11 +27,11 @@ nav:
           - Bid Automations: deep-dive/bid-automations.md
   - Deployment:
       - Arbitrum:
-          - Local Deployment: local-deployment/arbitrum/deployment.md
-          - Arbitrum Chains: local-deployment/arbitrum/test-node-data.md
+          - Deploy Local Testnode: local-deployment/arbitrum/deployment.md
+          - Arbitrum Chains: local-deployment/arbitrum/arbitrum-chains.md
           - Playground:
-              - Cargo Stylus: local-deployment/arbitrum/playground/cargo-stylus.md
-              - CM interactions: local-deployment/arbitrum/playground/cm-interactions.md
+              - Install Cargo Stylus: local-deployment/arbitrum/playground/cargo-stylus.md
+              - Cache Manager Cheatsheet: local-deployment/arbitrum/playground/cm-interactions.md
               - Guided Testing: local-deployment/arbitrum/playground/guided-testing.md
 
 theme:
@@ -73,6 +73,7 @@ theme:
     - content.code.annotate
     - content.code.copy
     - content.tooltips
+    - content.tabs.link
     - search.highlight
     - search.share
     - search.suggest

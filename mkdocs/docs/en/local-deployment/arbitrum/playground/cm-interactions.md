@@ -1,170 +1,179 @@
-# **📜 RPC Cheatsheet**
+# **⚙️ Cache Manager Interactions Guide**
 
-## 🔹 **Useful Environment Variables**
-
-### **RPC URLs**
-
-```bash
-export ARBONE_RPC="https://arb1.arbitrum.io/rpc"
-export ARBNOV_RPC="https://nova.arbitrum.io/rpc"
-export ARBSEP_RPC="https://sepolia-rollup.arbitrum.io/rpc"
-export ARBLOC_RPC="http://localhost:8547"
-export L1LOC_RPC="http://localhost:8545"
-```
-
-### **Cache Manager Addresses**
-
-```bash
-export ARBONE_CM=0x51dedbd2f190e0696afbee5e60bfde96d86464ec
-export ARBNOV_CM=0x20586f83bf11a7cee0a550c53b9dc9a5887de1b7
-export ARBSEP_CM=0x0c9043d042ab52cfa8d0207459260040cca54253
-export ARBLOC_CM=0x0f1f89aaf1c6fdb7ff9d361e4388f5f3997f12a8
-```
-
-### **Nitro Testnode Accounts**
-
-#### **Pre-funded Account**
-
-```bash
-export ARBPRE_ADD=0x3f1Eae7D46d88F08fc2F8ed27FCb2AB183EB2d0E
-export ARBPRE_PK=0xdc04c5399f82306ec4b4d654a342f40e2e0620fe39950d967e1e574b32d4dd36
-```
-
-#### **L2 Owner Account**
-
-```bash
-export ARBLOC_OWNER_PK=0xdc04c5399f82306ec4b4d654a342f40e2e0620fe39950d967e1e574b32d4dd36
-```
-
-!!! Tip "Define environment variables for easier interactions"
-
-    ```bash
-    export RPC=$ARBLOC_RPC
-    export ACC_PK=$ARBPRE_PK
-    export ACC_ADD=$ARBPRE_ADD
-    export CM_ADD=$ARBLOC_CM
-    ```
+This guide covers two ways to interact with Arbitrum's Cache Manager: **Cargo Stylus CLI** for streamlined contract management and **Foundry** for direct contract interactions.
 
 ---
 
-## **⚙️ Cache Manager Useful Commands**
+## **📋 Interaction Methods**
 
-### **🔎 Check Rust Contract Before Deployment**
+### **🔧 Cargo Stylus CLI**
+
+High-level commands for contract lifecycle management and cache operations.
+
+**Best for:** Contract deployment, quick status checks, streamlined bidding
+
+### **🛠️ Foundry (Direct Contract Interaction)**
+
+Direct access to CacheManager contract through `cast` commands.
+
+**Best for:** Advanced operations, custom bidding strategies, administrative functions
+
+---
+
+## **🚀 Contract Deployment & Activation**
+
+### **Check Contract Before Deployment**
 
 ```bash
 cargo stylus check
 ```
 
-### **🚀 Deploy Rust Contract**
+### **Deploy Contract**
 
 ```bash
 cargo stylus deploy --private-key $ACC_PK --no-verify --endpoint=$RPC
 ```
 
-### **🔑 Activate Contract**
+### **Activate Contract**
 
 ```bash
-cargo stylus activate --private-key $ACC_PK --address=$SC_ADD
+cargo stylus activate --private-key $ACC_PK --address=$SC_ADD --endpoint=$RPC
 ```
 
-### **📊 Check Cache Manager Status**
+---
+
+## **📊 Cache Status & Monitoring**
+
+### **Check Overall Cache Status**
 
 ```bash
 cargo stylus cache status --endpoint=$RPC
 ```
 
-### **🔎 Check Specific Contract Status**
+### **Check Specific Contract Status**
 
 ```bash
 cargo stylus cache status --endpoint=$RPC --address=$SC_ADD
 ```
 
-### **💰 Suggest Cache Manager Bid Size**
+---
 
-#### **Stylus CLI**
+## **💰 Cache Bidding Operations**
+
+### **Get Bid Suggestions**
+
+**Cargo Stylus CLI:**
 
 ```bash
 cargo stylus cache suggest-bid $SC_ADD --endpoint=$RPC
 ```
 
-#### **Foundry**
+**Foundry:**
 
 ```bash
-cast from-wei $(cast call $CM_ADD "getMinBid(address)(uint256)" $SC_ADD --rpc-url $RPC)
+cast from-wei $(cast call $CM_ADDRESS "getMinBid(address)(uint256)" $SC_ADD --rpc-url $RPC)
 ```
 
-### **💸 Send Cache Manager Bid**
+### **Place a Bid**
 
-#### **Stylus CLI**
+**Cargo Stylus CLI:**
 
 ```bash
 cargo stylus cache bid $SC_ADD $(cast to-wei 0.1) --private-key $ACC_PK --endpoint=$RPC
 ```
 
-#### **Foundry**
+**Foundry:**
 
 ```bash
-cast send $CM_ADD "placeBid(address)" $SC_ADD --rpc-url $RPC --private-key $ACC_PK --value $(cast to-wei 0)
+cast send $CM_ADDRESS "placeBid(address)" $SC_ADD --rpc-url $RPC --private-key $ACC_PK --value $(cast to-wei 0.1)
 ```
 
-!!! Note
+!!! tip "Error Handling"
 
-    If an error occurs, use:
+    If an error occurs during bidding, decode it for details:
 
-    ```bash
-    cast decode-error <ERROR_CODE>
+        ```bash
+        cast decode-error <ERROR_CODE>
     ```
-    Cached bytecode will return an error if already stored.
 
 ---
 
-## **🛠️ Cache Manager Admin Interactions**
+## **🛠️ Admin Operations**
 
-### **📦 Set Cache Size (Bytes)**
-
-```bash
-cast send $CM_ADD "setCacheSize(uint64)" 3000000 --rpc-url $RPC --private-key $ARBLOC_OWNER_PK
-```
-
-### **📉 Set Cache Decay Rate**
+### **Set Cache Size**
 
 ```bash
-cast send $CM_ADD "setDecayRate(uint64)" 0 --rpc-url $ARBLOC_RPC --private-key $ARBLOC_OWNER_PK
+cast send $CM_ADDRESS "setCacheSize(uint64)" 3000000 --rpc-url $RPC --private-key $ARBLOC_OWNER_PK
 ```
 
-### **🧹 Evict All Bid Entries**
+### **Set Cache Decay Rate**
 
 ```bash
-cast send $CM_ADD "evictAll()" --rpc-url $RPC --private-key $ARBLOC_OWNER_PK
+cast send $CM_ADDRESS "setDecayRate(uint64)" 0 --rpc-url $ARBLOC_RPC --private-key $ARBLOC_OWNER_PK
 ```
 
-### **🗑️ Evict K Bid Entries**
+### **Evict All Cached Contracts**
+
+```bash
+cast send $CM_ADDRESS "evictAll()" --rpc-url $RPC --private-key $ARBLOC_OWNER_PK
+```
+
+### **Evict K Contracts**
 
 ```bash
 export K=1
-cast send $CM_ADD "evictPrograms(uint256)" $K --rpc-url $RPC --private-key $ARBLOC_OWNER_PK
+cast send $CM_ADDRESS "evictPrograms(uint256)" $K --rpc-url $RPC --private-key $ARBLOC_OWNER_PK
 ```
 
-### **📜 Get Bid Entries (Default Getter)**
+---
+
+## **📜 Cache Inspection**
+
+### **Get Individual Cache Entry**
 
 ```bash
 export K=0
-cast call $CM_ADD "entries(uint256)(address code,uint256 size,uint256 bid)" $K --rpc-url $RPC
+cast call $CM_ADDRESS "entries(uint256)(address code,uint256 size,uint256 bid)" $K --rpc-url $RPC
 ```
 
-!!! Note "Returns an error if the cache is empty."
-
-### **📜 Get All Bid Entries**
+### **Get All Cache Entries**
 
 ```bash
-cast call $CM_ADD "getEntries()" --rpc-url $RPC
+cast call $CM_ADDRESS "getEntries()" --rpc-url $RPC
 ```
 
-!!! Warning "May crash if the cache is too large."
+!!! warning "May crash if cache is too large"
 
-### **📉 Get Smallest K Bid Entries**
+### **Get Smallest Bid Entries**
 
 ```bash
 export K=10
-cast call $CM_ADD "getSmallestEntries(uint256)" $K --rpc-url $RPC
+cast call $CM_ADDRESS "getSmallestEntries(uint256)" $K --rpc-url $RPC
 ```
+
+---
+
+## **🔧 Environment Variables**
+
+```bash
+export ACC_PK="your_account_private_key"
+export SC_ADD="your_contract_address"
+export CM_ADDRESS="cache_manager_contract_address"
+export RPC="your_rpc_endpoint"
+export ARBLOC_OWNER_PK="arbitrum_owner_private_key"  # Admin only
+```
+
+---
+
+## **🎯 Method Selection**
+
+**Use Cargo Stylus CLI for:** Contract lifecycle, streamlined commands, cache bidding
+
+**Use Foundry for:** Direct contract control, custom logic, admin operations
+
+---
+
+## **📚 See Also**
+
+- [Guided Testing](guided-testing.md) - Step-by-step testing workflow
+- [Cargo Stylus](cargo-stylus.md) - Detailed CLI documentation
