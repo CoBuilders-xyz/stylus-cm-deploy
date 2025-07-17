@@ -25,13 +25,14 @@ nav:
           - Eviction Risk: deep-dive/eviction-risk.md
           - Place Bid: deep-dive/place-bid.md
           - Bid Automations: deep-dive/bid-automations.md
-      # - Deployment:
-      #     - Docker:
-      #         - Stylus Cache Manager UI: dummy.md
-      #     - Arbitrum Local Testnode:
-      #         - Overview: dummy.md
-      #         - CM interactions: dummy.md
-      #         - Guided Testing: dummy.md
+  - Deployment:
+      - Arbitrum Local Testnode:
+          - Deployment: local-deployment/arbitrum-local-testnode/deployment.md
+          - Node Data: local-deployment/arbitrum-local-testnode/test-node-data.md
+          - Playground:
+              - Cargo Stylus: local-deployment/arbitrum-local-testnode/playground/cargo-stylus.md
+              - CM interactions: local-deployment/arbitrum-local-testnode/playground/cm-interactions.md
+              - Guided Testing: local-deployment/arbitrum-local-testnode/playground/guided-testing.md
 
 theme:
   name: material
