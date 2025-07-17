@@ -40,7 +40,7 @@ services:
   scm-nginx:
     container_name: scm-nginx
     build:
-      context: ../../submodules/stylus-nginx
+      context: ../../submodules/stylus-cm-nginx
       dockerfile: Dockerfile
     ports:
       - 8080:80
