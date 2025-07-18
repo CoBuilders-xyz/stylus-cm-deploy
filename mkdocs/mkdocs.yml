@@ -39,6 +39,7 @@ nav:
           - Deploy CMA Contracts: local-deployment/stylus-cache-manager-ui/deploy-cma-contracts.md
           - ThirdWeb Engine: local-deployment/stylus-cache-manager-ui/third-web-engine.md
           - SCM UI Backend: local-deployment/stylus-cache-manager-ui/scm-ui-backend.md
+          - SCM UI Frontend: local-deployment/stylus-cache-manager-ui/scm-ui-frontend.md
 
 theme:
   name: material

@@ -48,7 +48,7 @@ services:
       - scm-backend
       - scm-engine
   scm-backend:
-    container_name: scm-backend
+    container_name: stylus-cm-backend
     build:
       context: ../../submodules/stylus-cm-backend
       dockerfile: Dockerfile
