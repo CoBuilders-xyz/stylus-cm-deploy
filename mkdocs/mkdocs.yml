@@ -26,13 +26,19 @@ nav:
           - Place Bid: deep-dive/place-bid.md
           - Bid Automations: deep-dive/bid-automations.md
   - Deployment:
-      - Arbitrum:
+      - Arbitrum Knowledge Base:
           - Deploy Local Testnode: local-deployment/arbitrum/deployment.md
           - Arbitrum Chains: local-deployment/arbitrum/arbitrum-chains.md
           - Playground:
               - Install Cargo Stylus: local-deployment/arbitrum/playground/cargo-stylus.md
               - Cache Manager Cheatsheet: local-deployment/arbitrum/playground/cm-interactions.md
               - Guided Testing: local-deployment/arbitrum/playground/guided-testing.md
+      - Stylus Cache Manager UI:
+          - Overview: local-deployment/stylus-cache-manager-ui/overview.md
+          - Clone The repo: local-deployment/stylus-cache-manager-ui/clone-the-repo.md
+          - Deploy CMA Contracts: local-deployment/stylus-cache-manager-ui/deploy-cma-contracts.md
+          - ThirdWeb Engine: local-deployment/stylus-cache-manager-ui/third-web-engine.md
+          - SCM UI Backend: local-deployment/stylus-cache-manager-ui/scm-ui-backend.md
 
 theme:
   name: material
