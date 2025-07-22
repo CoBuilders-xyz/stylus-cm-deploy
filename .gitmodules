@@ -19,3 +19,4 @@
 [submodule "submodules/stylus-cm-nginx"]
 	path = submodules/stylus-cm-nginx
 	url = https://github.com/CoBuilders-xyz/stylus-cm-nginx.git
+	branch = staging
