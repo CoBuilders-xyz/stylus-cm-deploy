@@ -5,17 +5,8 @@
 To set up a local Nitro testnode, first clone the **arb-research** repository:
 
 ```bash
-git clone --recurse-submodules https://github.com/cobuilders-xyz/arb-research.git
+git clone https://github.com/OffchainLabs/nitro-testnode.git
 ```
-
-!!! Note
-
-    If the repository was cloned **without** the `--recurse-submodules` flag, initialize submodules manually:
-    ```bash
-    git submodule update --init --recursive
-    ```
-
----
 
 ## 🚀 **Start the Nitro Testnode**
 

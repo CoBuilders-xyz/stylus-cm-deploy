@@ -31,9 +31,9 @@ cargo stylus cache status --endpoint=<RPC_ENDPOINT>
 
 ### 🔹 **Cache Manager Addresses per Network**
 
-| **Network**             | **Cache Manager Address**                                                |
-| ----------------------- | ------------------------------------------------------------------------ |
-| 🟢 **Arbitrum One**     | `0x51dedbd2f190e0696afbee5e60bfde96d86464ec`                             |
-| 🟠 **Arbitrum Nova**    | `0x20586f83bf11a7cee0a550c53b9dc9a5887de1b7`                             |
-| 🔵 **Arbitrum Sepolia** | `0x0c9043d042ab52cfa8d0207459260040cca54253`                             |
-| 🏠 **Arbitrum Local**   | `0x0f1f89aaf1c6fdb7ff9d361e4388f5f3997f12a8` _(May vary per deployment)_ |
+| **Network**             | **Cache Manager Address**                    |
+| ----------------------- | -------------------------------------------- |
+| 🟢 **Arbitrum One**     | `0x51dedbd2f190e0696afbee5e60bfde96d86464ec` |
+| 🟠 **Arbitrum Nova**    | `0x20586f83bf11a7cee0a550c53b9dc9a5887de1b7` |
+| 🔵 **Arbitrum Sepolia** | `0x0c9043d042ab52cfa8d0207459260040cca54253` |
+| 🏠 **Arbitrum Local**   | `0x0f1f89aaf1c6fdb7ff9d361e4388f5f3997f12a8` |

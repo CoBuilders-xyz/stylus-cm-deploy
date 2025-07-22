@@ -4,7 +4,14 @@
   "description": "## Overview",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "submodule:init": "./scripts/submodule-init.sh",
+    "engine:start": "docker compose -f src/docker/docker-compose.yaml up -d scm-engine-db scm-engine-redis scm-engine",
+    "engine:pause": "docker compose -f src/docker/docker-compose.yaml pause scm-engine-db scm-engine-redis scm-engine",
+    "engine:delete": "docker compose -f src/docker/docker-compose.yaml down scm-engine-db scm-engine-redis scm-engine",
+    "backend:start": "docker compose -f src/docker/docker-compose.yaml up -d scm-db scm-redis scm-backend scm-nginx",
+    "backend:pause": "docker compose -f src/docker/docker-compose.yaml pause scm-db scm-redis scm-backend scm-nginx",
+    "backend:delete": "docker compose -f src/docker/docker-compose.yaml down scm-db scm-redis scm-backend scm-nginx"
   },
   "repository": {
     "type": "git",
