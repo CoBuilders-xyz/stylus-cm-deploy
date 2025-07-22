@@ -1,10 +1,6 @@
 [submodule "submodules/nitro-testnode"]
 	path = submodules/nitro-testnode
 	url = https://github.com/CoBuilders-xyz/nitro-testnode
-[submodule "submodules/stylus-cm-backend"]
-	path = submodules/stylus-cm-backend
-	url = git@github.com:CoBuilders-xyz/stylus-cm-backend.git
-
 
 	
 [submodule "submodules/nitro-contracts"]
@@ -20,3 +16,7 @@
 	path = submodules/stylus-cm-nginx
 	url = https://github.com/CoBuilders-xyz/stylus-cm-nginx.git
 	branch = staging
+[submodule "submodules/stylus-cm-backend"]
+	path = submodules/stylus-cm-backend
+	url = https://github.com/CoBuilders-xyz/stylus-cm-backend.git
+	branch = main
