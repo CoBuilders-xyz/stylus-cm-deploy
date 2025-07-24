@@ -41,6 +41,12 @@ The configuration process involves:
 5. **💰 Configure Wallets** - Set up backend wallet for transactions
 6. **🌐 Add Custom Networks** - Configure your Arbitrum networks
 
+!!! tip
+
+    You do **not** need to clone any repository for ThirdWeb Engine. The service runs as a Docker container using an official image pulled directly from Docker Hub.
+
+    Additionally, make sure to run **all commands from the root of the stylus-cm-deploy project**, where the `src/docker/` directory and environment files are located.
+
 ---
 
 ## **🏗️ Step 1: Create ThirdWeb Project**
@@ -319,7 +325,7 @@ curl --location 'http://localhost:3005/configuration/chains' \
 
 ### **7.2 Add Other Networks**
 
-## You can add any custom network to Engine by using the same request we used for adding Arbitrum Local Testnode
+You can add any custom network to Engine by using the same request we used for adding Arbitrum Local Testnode
 
 ## **✅ Configuration Complete**
 
