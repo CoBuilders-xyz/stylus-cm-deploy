@@ -78,13 +78,38 @@ cd ../../
 
 !!! tip "Dependency Management"
 
-    The automated script ensures all submodules are properly initialized with their required dependencies. Use this approach for consistent setup across different environments.
+    The automated script ensures all submodules are properly initialized with their required dependencies.
+
+---
+
+## **⚙️ Initialize Environment Files**
+
+Create your environment configuration files from the provided templates:
+
+```bash
+npm run envs:init
+```
+
+This command copies all `.example` environment files to their active versions:
+
+- `.env.backend.example` → `.env.backend`
+- `.env.engine.example` → `.env.engine`
+- `.env.engine-db.example` → `.env.engine-db`
+- `.env.scm-db.example` → `.env.scm-db`
+
+!!! info "Template Creation Only"
+
+    This step only creates the environment files from templates. **You'll configure the actual values** in the corresponding sections.
+
+!!! tip "Safe to Re-run"
+
+    The initialization script only creates missing files and won't overwrite existing environment configurations.
 
 ---
 
 ## **🔧 Next Steps**
 
-With your repository cloned and dependencies installed, you're ready to:
+With your repository cloned, dependencies installed, and environment files initialized, you're ready to:
 
 1. **[Deploy CMA Contracts](deploy-cma-contracts.md)** - Deploy smart contracts to your chosen network
 2. **[Configure ThirdWeb Engine](third-web-engine.md)** - Set up automation services
