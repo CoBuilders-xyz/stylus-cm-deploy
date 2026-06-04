@@ -109,6 +109,8 @@ services:
       - ./.env.engine
     ports:
       - 3005:3005
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
     deploy:
       resources:
         limits:
