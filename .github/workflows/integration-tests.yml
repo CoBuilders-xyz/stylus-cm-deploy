@@ -53,19 +53,20 @@ jobs:
           multipass version
 
       - name: Setup testnode VM
-        run: |
-          # Try without sudo first, fallback to sudo
-          ./scripts/multipass-testnode.sh setup || sudo -E ./scripts/multipass-testnode.sh setup
+        env:
+          MULTIPASS_VM_CPUS: "4"
+          MULTIPASS_VM_MEMORY: "4G"
+        run: sudo -E ./scripts/multipass-testnode.sh setup
 
       - name: Initialize testnode
+        timeout-minutes: 15
         env:
           SKIP_CONFIRM: "1"
-        run: |
-          ./scripts/multipass-testnode.sh init || sudo -E ./scripts/multipass-testnode.sh init
+        run: sudo -E ./scripts/multipass-testnode.sh init
 
       - name: Start testnode + port forwarding
         run: |
-          ./scripts/multipass-testnode.sh start || sudo -E ./scripts/multipass-testnode.sh start
+          sudo -E ./scripts/multipass-testnode.sh start
           until cast chain-id --rpc-url http://localhost:8547 2>/dev/null; do sleep 2; done
           echo "Testnode ready - chain ID: $(cast chain-id --rpc-url http://localhost:8547)"
 

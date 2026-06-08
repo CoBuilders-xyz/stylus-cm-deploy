@@ -13,8 +13,8 @@ set -euo pipefail
 
 VM_NAME="arbitrum-test"
 VM_IMAGE="jammy"
-VM_CPUS="2"
-VM_MEMORY="3G"
+VM_CPUS="${MULTIPASS_VM_CPUS:-2}"
+VM_MEMORY="${MULTIPASS_VM_MEMORY:-4G}"
 VM_DISK="30G"
 
 NITRO_DIR="/home/ubuntu/nitro-testnode"
@@ -238,8 +238,8 @@ cmd_init() {
     sleep 5
   fi
 
-  # --init already starts the node. --detach runs it in the background.
-  run_in_vm "cd '${NITRO_DIR}' && sg docker -c './test-node.bash --init --detach'"
+  # --init starts the node. --detach --nowait returns immediately after containers are up.
+  run_in_vm "cd '${NITRO_DIR}' && sg docker -c './test-node.bash --init --detach --nowait'"
 
   log "Testnode initialized and running inside VM."
   echo ""
