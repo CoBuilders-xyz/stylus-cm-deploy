@@ -53,13 +53,12 @@ jobs:
           multipass version
 
       - name: Import testnode snapshot
-        timeout-minutes: 10
         env:
           MULTIPASS_VM_CPUS: "4"
           MULTIPASS_VM_MEMORY: "4G"
         run: |
           sudo -E ./scripts/multipass-testnode.sh import \
-            "${{ vars.TESTNODE_SNAPSHOT_URL || 'https://radically-notable-redfish.ngrok-free.app/testnode-snapshot.qcow2.zst' }}"
+            "${{ vars.TESTNODE_SNAPSHOT_URL }}"
 
       - name: Start testnode + port forwarding
         run: |
