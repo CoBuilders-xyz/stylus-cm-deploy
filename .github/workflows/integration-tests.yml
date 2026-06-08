@@ -40,19 +40,29 @@ jobs:
       - name: Install Multipass
         run: |
           sudo snap install multipass
+          # Wait for multipassd to start and create socket
+          sleep 5
+          sudo chmod 666 /var/snap/multipass/common/multipass_socket || true
+          # If socket still not ready, wait more
+          for i in $(seq 1 10); do
+            if multipass version 2>/dev/null; then break; fi
+            echo "Waiting for multipassd... ($i)"
+            sleep 3
+            sudo chmod 666 /var/snap/multipass/common/multipass_socket 2>/dev/null || true
+          done
           multipass version
 
       - name: Setup testnode VM
-        run: ./scripts/multipass-testnode.sh setup
+        run: sudo -E ./scripts/multipass-testnode.sh setup
 
       - name: Initialize testnode
         env:
           SKIP_CONFIRM: "1"
-        run: ./scripts/multipass-testnode.sh init
+        run: sudo -E ./scripts/multipass-testnode.sh init
 
       - name: Start testnode + port forwarding
         run: |
-          ./scripts/multipass-testnode.sh start
+          sudo -E ./scripts/multipass-testnode.sh start
           until cast chain-id --rpc-url http://localhost:8547 2>/dev/null; do sleep 2; done
           echo "Testnode ready - chain ID: $(cast chain-id --rpc-url http://localhost:8547)"
 
