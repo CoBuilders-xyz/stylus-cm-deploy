@@ -1,0 +1,196 @@
+name: Integration Tests
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  CMA_ADDRESS: "0xA6E41fFD769491a42A6e5Ce453259b93983a22EF"
+  FUNDED_PK: "0xb6b15c8cb491557369f3c7d2c287b053eb229daa9c22138887752191c9520659"
+  FUNDED_ADDR: "0x3f1Eae7D46d88F08fc2F8ed27FCb2AB183EB2d0E"
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+          ls -la /dev/kvm
+
+      - name: Install system dependencies
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq socat jq
+
+      - name: Install Multipass
+        run: |
+          sudo snap install multipass
+          multipass version
+
+      - name: Setup testnode VM
+        run: ./scripts/multipass-testnode.sh setup
+
+      - name: Initialize testnode
+        env:
+          SKIP_CONFIRM: "1"
+        run: ./scripts/multipass-testnode.sh init
+
+      - name: Start testnode + port forwarding
+        run: |
+          ./scripts/multipass-testnode.sh start
+          until cast chain-id --rpc-url http://localhost:8547 2>/dev/null; do sleep 2; done
+          echo "Testnode ready - chain ID: $(cast chain-id --rpc-url http://localhost:8547)"
+
+      - name: Deploy CMA contract
+        working-directory: submodules/stylus-cm-contracts
+        run: |
+          printf 'ARB_LOCAL_FUNDED_PK=%s\nARB_LOCAL_RPC=http://localhost:8547\n' "$FUNDED_PK" > .env
+          npm ci
+          npm run deploy:local
+
+      - name: Create environment files
+        run: |
+          # Backend .env
+          cat > src/docker/.env.backend << 'ENVEOF'
+          ENVIRONMENT=local
+          LOGGER_LEVELS=log
+          POSTGRES_HOST=scm-db
+          POSTGRES_PORT=5432
+          POSTGRES_USER=scm-db-user
+          POSTGRES_PASSWORD=scm-db-pwd
+          POSTGRES_DB=scm_db
+          POSTGRES_DB_SYNC=true
+          DATABASE_URL=postgres://scm-db-user:scm-db-pwd@scm-db:5432/scm_db
+          REDIS_HOST=scm-redis
+          REDIS_PORT=6379
+          REDIS_URL=redis://scm-redis:6379
+          FRONTEND_URL=http://localhost:5000
+          JWT_SECRET=CI_SECRET_FOR_SIGNING_JWT_TOKENS_1234567890
+          AUTH_NONCE_EXPIRATION=180000
+          JWT_EXPIRES_IN=24h
+          CONTRACT_SMALL_SIZE=800000
+          CONTRACT_MID_SIZE=1600000
+          CONTRACT_LARGE_SIZE=2400000
+          EVENT_TYPES=InsertBid,DeleteBid,Pause,Unpause,SetCacheSize,SetDecayRate,Initialized,ContractAdded,ContractUpdated,ContractRemoved,BalanceUpdated,BidPlaced,BidError,ActivationPerformed,ActivationError,ActivationRevertData,ContractAutoActivateUpdated,ContractMaxActivationCostUpdated
+          EVENT_BLOCK_BATCH_SIZE=1000000
+          BACKOFF_DELAY=0
+          BULLMQ_ATTEMPTS=5
+          BULLMQ_BACKOFF_DELAY=10000
+          ARB_LOCAL_RPC=http://host.docker.internal:8547
+          ARB_LOCAL_RPC_WSS=ws://host.docker.internal:8548
+          ARB_LOCAL_FAST_SYNC_RPC=http://host.docker.internal:8547
+          ARB_LOCAL_CMA_ADDRESS=0xA6E41fFD769491a42A6e5Ce453259b93983a22EF
+          ARB_LOCAL_ENABLED=true
+          CMA_AUTOMATION_ENABLED=true
+          CMA_ACTIVATION_AUTOMATION_ENABLED=true
+          ENGINE_BASE_URL=http://scm-engine:3005
+          ENGINE_BACKEND_WALLET_ADDRESS=0x3f1Eae7D46d88F08fc2F8ed27FCb2AB183EB2d0E
+          ENGINE_AUTH_TOKEN=placeholder
+          ENVEOF
+
+          # Engine .env
+          cat > src/docker/.env.engine << ENVEOF
+          ENCRYPTION_PASSWORD=ci-encryption-password-12345
+          THIRDWEB_API_SECRET_KEY=${THIRDWEB_SECRET:-nosecret}
+          ADMIN_WALLET_ADDRESS=$FUNDED_ADDR
+          BACKEND_WALLET_ADDRESS=$FUNDED_ADDR
+          POSTGRES_CONNECTION_URL=postgresql://scm-engine-db-user:scm-engine-db-pwd@scm-engine-db:5432/scm_engine_db?sslmode=disable
+          REDIS_URL=redis://scm-engine-redis:6379?family=0
+          PORT=3005
+          HOST=::
+          ENVEOF
+
+          # DB .env files
+          printf 'POSTGRES_USER=scm-db-user\nPOSTGRES_PASSWORD=scm-db-pwd\nPOSTGRES_DB=scm_db\n' > src/docker/.env.scm-db
+          printf 'POSTGRES_USER=scm-engine-db-user\nPOSTGRES_PASSWORD=scm-engine-db-pwd\nPOSTGRES_DB=scm_engine_db\n' > src/docker/.env.engine-db
+        env:
+          THIRDWEB_SECRET: ${{ secrets.THIRDWEB_API_SECRET_KEY }}
+
+      - name: Start Engine stack
+        run: |
+          docker compose -f src/docker/docker-compose.yaml up -d scm-engine-db scm-engine-redis scm-engine
+          echo "Waiting for Engine..."
+          timeout 120 bash -c 'until curl -sf http://localhost:3005/system/health > /dev/null 2>&1; do sleep 3; done'
+          echo "Engine ready"
+
+      - name: Configure Engine (import wallet + create token)
+        env:
+          THIRDWEB_SECRET: ${{ secrets.THIRDWEB_API_SECRET_KEY }}
+        run: |
+          ENGINE_URL="http://localhost:3005"
+
+          echo "Importing backend wallet..."
+          curl -sf -X POST "$ENGINE_URL/backend-wallet/import" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $THIRDWEB_SECRET" \
+            -d "{\"privateKey\":\"$FUNDED_PK\",\"label\":\"CI Backend Wallet\"}" || echo "Wallet import response above"
+
+          echo "Creating access token..."
+          TOKEN=$(curl -sf -X POST "$ENGINE_URL/auth/access-tokens/create" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $THIRDWEB_SECRET" \
+            -d '{"label":"ci-integration-tests"}' | jq -r '.result.accessToken')
+
+          if [ -z "$TOKEN" ] || [ "$TOKEN" = "null" ]; then
+            echo "::error::Failed to create Engine access token"
+            exit 1
+          fi
+
+          sed -i "s|ENGINE_AUTH_TOKEN=placeholder|ENGINE_AUTH_TOKEN=$TOKEN|" src/docker/.env.backend
+          echo "Engine configured"
+
+      - name: Start backend stack
+        run: |
+          docker compose -f src/docker/docker-compose.yaml up -d scm-db scm-redis scm-backend
+          echo "Waiting for backend..."
+          timeout 120 bash -c 'until curl -sf http://localhost:3000/contracts > /dev/null 2>&1; do sleep 5; done'
+          echo "Backend ready"
+
+      - name: Install test dependencies
+        working-directory: submodules/stylus-cm-backend
+        run: npm ci
+
+      - name: Run caching integration tests
+        working-directory: submodules/stylus-cm-backend
+        run: npx jest --config ./test/jest-e2e.json --testPathPattern cma-caching --runInBand --verbose --forceExit
+
+      - name: Run activation integration tests
+        working-directory: submodules/stylus-cm-backend
+        run: npx jest --config ./test/jest-e2e.json --testPathPattern cma-activation --runInBand --verbose --forceExit
+
+      - name: Collect logs on failure
+        if: failure()
+        run: |
+          echo "::group::Backend logs"
+          docker compose -f src/docker/docker-compose.yaml logs scm-backend --tail=300 2>&1 || true
+          echo "::endgroup::"
+          echo "::group::Engine logs"
+          docker compose -f src/docker/docker-compose.yaml logs scm-engine --tail=100 2>&1 || true
+          echo "::endgroup::"
+          echo "::group::Testnode status"
+          multipass exec arbitrum-test -- docker ps 2>&1 || true
+          echo "::endgroup::"
+          echo "::group::Multipass info"
+          multipass info arbitrum-test 2>&1 || true
+          echo "::endgroup::"
+
+      - name: Cleanup
+        if: always()
+        run: |
+          docker compose -f src/docker/docker-compose.yaml down -v 2>&1 || true
+          multipass delete arbitrum-test --purge 2>&1 || true

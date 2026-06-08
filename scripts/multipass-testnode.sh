@@ -14,7 +14,7 @@ set -euo pipefail
 VM_NAME="arbitrum-test"
 VM_IMAGE="jammy"
 VM_CPUS="2"
-VM_MEMORY="4G"
+VM_MEMORY="3G"
 VM_DISK="30G"
 
 NITRO_DIR="/home/ubuntu/nitro-testnode"
@@ -230,10 +230,13 @@ cmd_init() {
   ensure_vm_running
 
   log "Initializing nitro-testnode (this will reset chain state)..."
-  echo ""
-  echo "WARNING: This destroys any existing chain data in the VM."
-  echo "Press Ctrl+C within 5 seconds to abort."
-  sleep 5
+
+  if [[ "${SKIP_CONFIRM:-}" != "1" ]]; then
+    echo ""
+    echo "WARNING: This destroys any existing chain data in the VM."
+    echo "Press Ctrl+C within 5 seconds to abort."
+    sleep 5
+  fi
 
   # --init already starts the node. --detach runs it in the background.
   run_in_vm "cd '${NITRO_DIR}' && sg docker -c './test-node.bash --init --detach'"
