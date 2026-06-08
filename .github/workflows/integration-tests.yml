@@ -52,17 +52,14 @@ jobs:
           sleep 3
           multipass version
 
-      - name: Setup testnode VM
+      - name: Import testnode snapshot
+        timeout-minutes: 10
         env:
           MULTIPASS_VM_CPUS: "4"
           MULTIPASS_VM_MEMORY: "4G"
-        run: sudo -E ./scripts/multipass-testnode.sh setup
-
-      - name: Initialize testnode
-        timeout-minutes: 15
-        env:
-          SKIP_CONFIRM: "1"
-        run: sudo -E ./scripts/multipass-testnode.sh init
+        run: |
+          sudo -E ./scripts/multipass-testnode.sh import \
+            "${{ vars.TESTNODE_SNAPSHOT_URL || 'https://radically-notable-redfish.ngrok-free.app/testnode-snapshot.qcow2.zst' }}"
 
       - name: Start testnode + port forwarding
         run: |
