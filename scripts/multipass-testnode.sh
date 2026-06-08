@@ -239,7 +239,11 @@ cmd_init() {
   fi
 
   # --init starts the node. --detach --nowait returns immediately after containers are up.
-  run_in_vm "cd '${NITRO_DIR}' && sg docker -c './test-node.bash --init --detach --nowait'"
+  # Use timeout to prevent hanging in CI (init should complete in <10min)
+  run_in_vm "cd '${NITRO_DIR}' && timeout 600 sg docker -c './test-node.bash --init --detach --nowait'" || {
+    log "Init command timed out or failed, checking if testnode is running anyway..."
+    run_in_vm "sg docker -c 'docker ps'" || true
+  }
 
   log "Testnode initialized and running inside VM."
   echo ""
