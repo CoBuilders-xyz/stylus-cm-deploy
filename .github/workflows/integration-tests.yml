@@ -13,7 +13,7 @@ env:
 jobs:
   integration:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 55
 
     steps:
       - uses: actions/checkout@v4
@@ -30,6 +30,25 @@ jobs:
 
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Cache Rust artifacts
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/cargo-stylus
+            ~/.cargo/registry
+            ~/.cargo/git
+            submodules/stylus-cm-contracts/test/utils/mock-wasm-contracts/mock-contract/target
+          key: rust-${{ runner.os }}-${{ hashFiles('submodules/stylus-cm-contracts/test/utils/mock-wasm-contracts/mock-contract/Cargo.toml') }}
+          restore-keys: rust-${{ runner.os }}-
+
+      - name: Install cargo-stylus
+        run: command -v cargo-stylus >/dev/null 2>&1 || cargo install cargo-stylus
 
       - name: Enable KVM
         run: |
