@@ -14,7 +14,16 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 ENGINE_URL="${ENGINE_URL:-http://localhost:3005}"
-ENGINE_SECRET="${ENGINE_SECRET:-nrx1X3htASa_d7x5skQGVc-N4e-CgOJhiTy6EzUThZ8zkRNX-4lgliPTksZZjbigWZHv-cLk41qUw0G6W01Nhg}"
+ENGINE_SECRET="${ENGINE_SECRET:-}"
+if [[ -z "$ENGINE_SECRET" ]]; then
+  # Try to read from .env.engine
+  if [[ -f "${PROJECT_ROOT}/src/docker/.env.engine" ]]; then
+    ENGINE_SECRET=$(grep -oP '(?<=THIRDWEB_API_SECRET_KEY=).*' "${PROJECT_ROOT}/src/docker/.env.engine" || echo "")
+  fi
+  if [[ -z "$ENGINE_SECRET" ]]; then
+    die "ENGINE_SECRET not set and could not read THIRDWEB_API_SECRET_KEY from .env.engine"
+  fi
+fi
 FUNDED_PK="0xb6b15c8cb491557369f3c7d2c287b053eb229daa9c22138887752191c9520659"
 FUNDED_ADDR="0x3f1Eae7D46d88F08fc2F8ed27FCb2AB183EB2d0E"
 ENV_BACKEND="${PROJECT_ROOT}/src/docker/.env.backend"
