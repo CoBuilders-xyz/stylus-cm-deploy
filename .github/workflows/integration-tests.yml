@@ -234,7 +234,9 @@ jobs:
       # ── Tests ───────────────────────────────────────────────────────────
       - name: Install test dependencies
         working-directory: submodules/stylus-cm-backend
-        run: npm ci
+        run: |
+          sudo rm -rf node_modules
+          npm ci
 
       - name: Run caching integration tests
         working-directory: submodules/stylus-cm-backend
