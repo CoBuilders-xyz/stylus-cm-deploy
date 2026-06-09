@@ -277,6 +277,12 @@ jobs:
           TESTNODE_SCRIPT: /tmp/devnode-sudo.sh
         run: npx jest --config ./test/jest-e2e.json --testPathPattern cma-activation --runInBand --verbose --forceExit
 
+      - name: Run alerts integration tests
+        working-directory: submodules/stylus-cm-backend
+        env:
+          TESTNODE_SCRIPT: /tmp/devnode-sudo.sh
+        run: npx jest --config ./test/jest-e2e.json --testPathPattern alerts --runInBand --verbose --forceExit
+
       # ── Debugging on failure ────────────────────────────────────────────
       - name: Collect logs on failure
         if: failure()
