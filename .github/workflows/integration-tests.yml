@@ -32,7 +32,7 @@ jobs:
         uses: foundry-rs/foundry-toolchain@v1
 
       - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@1.83.0
         with:
           targets: wasm32-unknown-unknown
 
@@ -44,8 +44,8 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             submodules/stylus-cm-contracts/test/utils/mock-wasm-contracts/mock-contract/target
-          key: rust-${{ runner.os }}-${{ hashFiles('submodules/stylus-cm-contracts/test/utils/mock-wasm-contracts/mock-contract/Cargo.toml') }}
-          restore-keys: rust-${{ runner.os }}-
+          key: rust-1.83.0-${{ runner.os }}-${{ hashFiles('submodules/stylus-cm-contracts/test/utils/mock-wasm-contracts/mock-contract/Cargo.lock') }}
+          restore-keys: rust-1.83.0-${{ runner.os }}-
 
       - name: Install cargo-stylus
         run: command -v cargo-stylus >/dev/null 2>&1 || cargo install cargo-stylus
