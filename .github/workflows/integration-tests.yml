@@ -9,9 +9,6 @@ env:
   FUNDED_PK: "0xb6b15c8cb491557369f3c7d2c287b053eb229daa9c22138887752191c9520659"
   FUNDED_ADDR: "0x3f1Eae7D46d88F08fc2F8ed27FCb2AB183EB2d0E"
   L2_OWNER_PK: "0xdc04c5399f82306ec4b4d654a342f40e2e0620fe39950d967e1e574b32d4dd36"
-  # Deterministic addresses (same deployer + nonces on every fresh devnode)
-  CACHE_MANAGER_ADDRESS: "0x4A2bA922052bA54e29c5417bC979Daaf7D5Fe4f4"
-  CMA_ADDRESS: "0x3DF948c956e14175f43670407d5796b95Bb219D8"
 
 jobs:
   integration:
@@ -85,7 +82,7 @@ jobs:
           cat > .env << EOF
           ARB_LOCAL_FUNDED_PK=$FUNDED_PK
           ARB_LOCAL_RPC=http://localhost:8547
-          ARB_LOCAL_CACHE_MANAGER_ADDRESS=$CACHE_MANAGER_ADDRESS
+          ARB_LOCAL_CACHE_MANAGER_ADDRESS=0x0000000000000000000000000000000000000000
           ARB_SEPOLIA_RPC=https://placeholder.example.com
           ARB_SEPOLIA_FUNDED_PK=0x0000000000000000000000000000000000000000000000000000000000000001
           ARB_ONE_RPC=https://placeholder.example.com
@@ -95,17 +92,41 @@ jobs:
           EOF
 
           # 1. Deploy real CacheManager (proxy with full bidding interface)
-          npx hardhat run scripts/deploy/deploy-cache-manager-devnode.ts --network localArb
+          CM_OUTPUT=$(npx hardhat run scripts/deploy/deploy-cache-manager-devnode.ts --network localArb 2>&1)
+          echo "$CM_OUTPUT"
+          CACHE_MANAGER_ADDRESS=$(echo "$CM_OUTPUT" | grep -oP '(?<=CacheManager deployed at: )0x[0-9a-fA-F]+')
+          if [ -z "$CACHE_MANAGER_ADDRESS" ]; then
+            echo "::error::Failed to extract CacheManager address from deploy output"
+            exit 1
+          fi
+          echo "CACHE_MANAGER_ADDRESS=$CACHE_MANAGER_ADDRESS" >> "$GITHUB_ENV"
+
+          # Update .env with real CacheManager address for CMA deployment
+          sed -i "s|ARB_LOCAL_CACHE_MANAGER_ADDRESS=.*|ARB_LOCAL_CACHE_MANAGER_ADDRESS=$CACHE_MANAGER_ADDRESS|" .env
 
           # 2. Deploy CacheManagerAutomation via Ignition
           rm -rf ignition/deployments/chain-412346
-          npm run deploy:local
+          CMA_OUTPUT=$(npm run deploy:local 2>&1)
+          echo "$CMA_OUTPUT"
+          CMA_ADDRESS=$(echo "$CMA_OUTPUT" | grep -oP '(?<=CacheManagerAutomation deployed to: )0x[0-9a-fA-F]+')
+          if [ -z "$CMA_ADDRESS" ]; then
+            echo "::error::Failed to extract CMA address from deploy output"
+            exit 1
+          fi
+          echo "CMA_ADDRESS=$CMA_ADDRESS" >> "$GITHUB_ENV"
+
+          echo "Deployed addresses:"
+          echo "  CacheManager: $CACHE_MANAGER_ADDRESS"
+          echo "  CMA: $CMA_ADDRESS"
 
       # ── Docker environment files ────────────────────────────────────────
       - name: Create environment files
         env:
           THIRDWEB_SECRET: ${{ secrets.THIRDWEB_API_SECRET_KEY }}
         run: |
+          echo "Using deployed addresses:"
+          echo "  CACHE_MANAGER_ADDRESS=$CACHE_MANAGER_ADDRESS"
+          echo "  CMA_ADDRESS=$CMA_ADDRESS"
           cat > src/docker/.env.backend << EOF
           ENVIRONMENT=local
           LOGGER_LEVELS=log
@@ -175,7 +196,7 @@ jobs:
         run: |
           docker compose -f src/docker/docker-compose.yaml up -d scm-engine-db scm-engine-redis scm-engine
           echo "Waiting for Engine..."
-          timeout 120 bash -c 'until curl -sf http://localhost:3005/system/health > /dev/null 2>&1; do sleep 3; done'
+          timeout 120 bash -c 'until curl -sf http://127.0.0.1:3005/system/health > /dev/null 2>&1; do sleep 3; done'
           echo "Engine ready"
 
       - name: Configure Engine (chain + wallet + access token)
@@ -188,7 +209,7 @@ jobs:
         run: |
           docker compose -f src/docker/docker-compose.yaml up -d scm-db scm-redis scm-backend
           echo "Waiting for backend..."
-          timeout 180 bash -c 'until curl -sf http://localhost:3000/contracts > /dev/null 2>&1; do sleep 5; done'
+          timeout 180 bash -c 'until curl -sf http://127.0.0.1:3000/contracts > /dev/null 2>&1; do sleep 5; done'
           echo "Backend ready"
 
       # ── Tests ───────────────────────────────────────────────────────────
@@ -212,6 +233,14 @@ jobs:
       - name: Collect logs on failure
         if: failure()
         run: |
+          echo "::group::Deployed addresses"
+          echo "CACHE_MANAGER_ADDRESS=$CACHE_MANAGER_ADDRESS"
+          echo "CMA_ADDRESS=$CMA_ADDRESS"
+          echo "FUNDED_ADDR=$FUNDED_ADDR"
+          echo "::endgroup::"
+          echo "::group::Backend env (addresses)"
+          grep -E '(CACHE_MANAGER|CMA_ADDRESS|ENGINE_AUTH_TOKEN)' src/docker/.env.backend 2>/dev/null || true
+          echo "::endgroup::"
           echo "::group::Backend logs"
           docker compose -f src/docker/docker-compose.yaml logs scm-backend --tail=300 2>&1 || true
           echo "::endgroup::"
