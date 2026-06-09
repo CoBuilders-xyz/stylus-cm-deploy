@@ -172,6 +172,7 @@ jobs:
           EVENT_TYPES=InsertBid,DeleteBid,Pause,Unpause,SetCacheSize,SetDecayRate,Initialized,ContractAdded,ContractUpdated,ContractRemoved,BalanceUpdated,BidPlaced,BidError,ActivationPerformed,ActivationError,ActivationRevertData,ContractAutoActivateUpdated,ContractMaxActivationCostUpdated
           EVENT_BLOCK_BATCH_SIZE=1000000
           BACKOFF_DELAY=0
+          TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
           BULLMQ_ATTEMPTS=5
           BULLMQ_BACKOFF_DELAY=10000
           ARB_ONE_RPC=https://placeholder.example.com
@@ -281,6 +282,8 @@ jobs:
         working-directory: submodules/stylus-cm-backend
         env:
           TESTNODE_SCRIPT: /tmp/devnode-sudo.sh
+          WEBHOOK_URL: ${{ vars.ALERT_WEBHOOK_URL }}
+          TELEGRAM_CHAT_ID: ${{ vars.ALERT_TELEGRAM_CHAT_ID }}
         run: npx jest --config ./test/jest-e2e.json --testPathPattern alerts --runInBand --verbose --forceExit
 
       # ── Debugging on failure ────────────────────────────────────────────
