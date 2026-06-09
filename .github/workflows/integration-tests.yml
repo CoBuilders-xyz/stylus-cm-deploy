@@ -260,16 +260,21 @@ jobs:
           sudo rm -rf node_modules
           npm ci
 
+      - name: Create devnode sudo wrapper
+        run: |
+          printf '#!/bin/bash\nexec sudo -E "%s/scripts/devnode.sh" "$@"\n' "$GITHUB_WORKSPACE" > /tmp/devnode-sudo.sh
+          chmod +x /tmp/devnode-sudo.sh
+
       - name: Run caching integration tests
         working-directory: submodules/stylus-cm-backend
         env:
-          TESTNODE_SCRIPT: ${{ github.workspace }}/scripts/devnode.sh
+          TESTNODE_SCRIPT: /tmp/devnode-sudo.sh
         run: npx jest --config ./test/jest-e2e.json --testPathPattern cma-caching --runInBand --verbose --forceExit
 
       - name: Run activation integration tests
         working-directory: submodules/stylus-cm-backend
         env:
-          TESTNODE_SCRIPT: ${{ github.workspace }}/scripts/devnode.sh
+          TESTNODE_SCRIPT: /tmp/devnode-sudo.sh
         run: npx jest --config ./test/jest-e2e.json --testPathPattern cma-activation --runInBand --verbose --forceExit
 
       # ── Debugging on failure ────────────────────────────────────────────
