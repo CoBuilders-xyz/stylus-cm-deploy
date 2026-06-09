@@ -129,7 +129,7 @@ jobs:
           echo "  CMA_ADDRESS=$CMA_ADDRESS"
           cat > src/docker/.env.backend << EOF
           ENVIRONMENT=local
-          LOGGER_LEVELS=log
+          LOGGER_LEVELS=log,error,warn
           POSTGRES_HOST=scm-db
           POSTGRES_PORT=5432
           POSTGRES_USER=scm-db-user
@@ -208,8 +208,27 @@ jobs:
       - name: Start backend stack
         run: |
           docker compose -f src/docker/docker-compose.yaml up -d scm-db scm-redis scm-backend
-          echo "Waiting for backend..."
-          timeout 180 bash -c 'until curl -sf http://127.0.0.1:3000/contracts > /dev/null 2>&1; do sleep 5; done'
+          echo "Waiting for backend container to start..."
+          sleep 10
+
+          echo "=== Port mapping ==="
+          docker port stylus-cm-backend 3000 || echo "WARNING: port 3000 not mapped!"
+
+          echo "=== Container status ==="
+          docker ps --filter name=stylus-cm-backend --format '{{.Status}}'
+
+          echo "=== First probe (verbose) ==="
+          curl -v http://127.0.0.1:3000/blockchains 2>&1 || true
+
+          echo "=== Health check loop ==="
+          timeout 180 bash -c '
+            while true; do
+              code=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:3000/blockchains 2>/dev/null || echo "000")
+              echo "  probe: HTTP $code"
+              if [ "$code" = "200" ]; then exit 0; fi
+              sleep 5
+            done
+          '
           echo "Backend ready"
 
       # ── Tests ───────────────────────────────────────────────────────────
