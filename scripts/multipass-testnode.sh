@@ -13,8 +13,8 @@ set -euo pipefail
 
 VM_NAME="arbitrum-test"
 VM_IMAGE="jammy"
-VM_CPUS="2"
-VM_MEMORY="4G"
+VM_CPUS="${MULTIPASS_VM_CPUS:-2}"
+VM_MEMORY="${MULTIPASS_VM_MEMORY:-4G}"
 VM_DISK="30G"
 
 NITRO_DIR="/home/ubuntu/nitro-testnode"
@@ -230,13 +230,20 @@ cmd_init() {
   ensure_vm_running
 
   log "Initializing nitro-testnode (this will reset chain state)..."
-  echo ""
-  echo "WARNING: This destroys any existing chain data in the VM."
-  echo "Press Ctrl+C within 5 seconds to abort."
-  sleep 5
 
-  # --init already starts the node. --detach runs it in the background.
-  run_in_vm "cd '${NITRO_DIR}' && sg docker -c './test-node.bash --init --detach'"
+  if [[ "${SKIP_CONFIRM:-}" != "1" ]]; then
+    echo ""
+    echo "WARNING: This destroys any existing chain data in the VM."
+    echo "Press Ctrl+C within 5 seconds to abort."
+    sleep 5
+  fi
+
+  # --init starts the node. --detach --nowait returns immediately after containers are up.
+  # Use timeout to prevent hanging in CI (init should complete in <10min)
+  run_in_vm "cd '${NITRO_DIR}' && timeout 600 sg docker -c './test-node.bash --init --detach --nowait'" || {
+    log "Init command timed out or failed, checking if testnode is running anyway..."
+    run_in_vm "sg docker -c 'docker ps'" || true
+  }
 
   log "Testnode initialized and running inside VM."
   echo ""
@@ -258,10 +265,11 @@ cmd_start() {
 
   log "VM IP: $vm_ip"
 
-  # Start testnode containers if not running.
-  # --pull never: blockscout-testnode is built locally during init and can't be pulled.
+  # Only start containers that already exist (created during init).
+  # "docker compose start" restarts stopped containers without creating new ones
+  # or touching the full compose file (which defines ~38 services, most unused).
   log "Ensuring testnode containers are running..."
-  run_in_vm "cd '${NITRO_DIR}' && sg docker -c 'docker compose up -d --pull never'" || true
+  run_in_vm "cd '${NITRO_DIR}' && sg docker -c 'docker compose start'" || true
 
   # Wait for sequencer to be reachable inside the VM
   log "Waiting for sequencer to be reachable inside VM..."
@@ -510,6 +518,193 @@ cmd_shell() {
   multipass shell "$VM_NAME"
 }
 
+# ── Snapshot / Restore / Export / Import ─────────────────────────────────────
+
+SNAPSHOT_DEFAULT_NAME="fresh-init"
+
+cmd_snapshot() {
+  local snap_name="${1:-$SNAPSHOT_DEFAULT_NAME}"
+  require_cmd multipass
+
+  if ! vm_exists; then
+    die "VM '$VM_NAME' does not exist. Run '$0 setup && $0 init' first."
+  fi
+
+  local was_running=false
+  if vm_is_running; then
+    was_running=true
+    log "Stopping VM before snapshot (required by Multipass)..."
+    multipass stop "$VM_NAME"
+  fi
+
+  log "Taking snapshot '$snap_name' of VM '$VM_NAME'..."
+  multipass snapshot "$VM_NAME" --name "$snap_name" \
+    --comment "nitro-testnode initialized and ready to start"
+
+  if $was_running; then
+    log "Restarting VM..."
+    multipass start "$VM_NAME"
+  fi
+
+  log "Snapshot '$snap_name' created."
+  echo ""
+  echo "To restore later:  $0 restore $snap_name"
+  echo "To export for CI:  $0 export"
+}
+
+cmd_restore() {
+  local snap_name="${1:-$SNAPSHOT_DEFAULT_NAME}"
+  require_cmd multipass
+
+  if ! vm_exists; then
+    die "VM '$VM_NAME' does not exist."
+  fi
+
+  # Stop socat on host
+  stop_socat "$SOCAT_PID_RPC"
+  stop_socat "$SOCAT_PID_WS"
+
+  local was_running=false
+  if vm_is_running; then
+    was_running=true
+    log "Stopping VM before restore..."
+    multipass stop "$VM_NAME"
+  fi
+
+  log "Restoring snapshot '${snap_name}'..."
+  multipass restore "${VM_NAME}.${snap_name}" --destructive
+
+  log "Starting VM..."
+  multipass start "$VM_NAME"
+  sleep 3
+
+  log "Restored to snapshot '${snap_name}'. VM is running."
+  echo ""
+  echo "Next: $0 start   # to set up port forwarding"
+}
+
+cmd_export() {
+  local output_path="${1:-./testnode-snapshot.qcow2.zst}"
+  require_cmd multipass
+
+  if ! vm_exists; then
+    die "VM '$VM_NAME' does not exist."
+  fi
+
+  local was_running=false
+  if vm_is_running; then
+    was_running=true
+    log "Stopping VM before export..."
+    multipass stop "$VM_NAME"
+  fi
+
+  # Locate the VM disk image
+  local instance_dir="/var/snap/multipass/common/data/multipassd/vault/instances/${VM_NAME}"
+  local disk_file=""
+
+  # Find the QCOW2 disk (name varies by Multipass version)
+  disk_file=$(sudo find "$instance_dir" -maxdepth 1 -name "*.img" -o -name "*.qcow2" 2>/dev/null | head -1)
+  if [[ -z "$disk_file" ]]; then
+    die "Could not find VM disk image in $instance_dir"
+  fi
+
+  local disk_size
+  disk_size=$(sudo du -h "$disk_file" | cut -f1)
+  log "Found VM disk: $disk_file ($disk_size)"
+
+  # Also grab the cloud-init and Multipass VM config for faithful reconstruction
+  local json_file="${instance_dir}/instance-image.json"
+
+  log "Compressing VM disk with zstd (this may take a few minutes)..."
+  sudo zstd -T0 -9 --force "$disk_file" -o "$output_path"
+  sudo chown "$(id -u):$(id -g)" "$output_path"
+
+  local compressed_size
+  compressed_size=$(du -h "$output_path" | cut -f1)
+
+  if $was_running; then
+    log "Restarting VM..."
+    multipass start "$VM_NAME"
+  fi
+
+  log "Export complete: $output_path ($compressed_size)"
+  echo ""
+  echo "Upload this file to GitHub Releases, S3, or any HTTP server."
+  echo "To import on another machine:"
+  echo "  $0 import <url-or-path-to-file>"
+}
+
+cmd_import() {
+  local source="${1:-}"
+  if [[ -z "$source" ]]; then
+    die "Usage: $0 import <url-or-local-path>"
+  fi
+
+  require_cmd multipass
+  require_cmd zstd
+
+  if vm_exists; then
+    die "VM '$VM_NAME' already exists. Run '$0 destroy' first."
+  fi
+
+  local local_file="$source"
+
+  # Download if URL
+  if [[ "$source" == http://* || "$source" == https://* ]]; then
+    local_file="/tmp/testnode-snapshot.qcow2.zst"
+    log "Downloading snapshot from $source ..."
+    curl -fSL --progress-bar -o "$local_file" "$source"
+  fi
+
+  if [[ ! -f "$local_file" ]]; then
+    die "File not found: $local_file"
+  fi
+
+  log "Decompressing snapshot..."
+  local decompressed="/tmp/testnode-snapshot.qcow2"
+  zstd -d --force "$local_file" -o "$decompressed"
+
+  # Launch a fresh VM from the decompressed disk image.
+  # Multipass can launch from a local file:// URL as a custom image.
+  # However, QCOW2 snapshots aren't bootable as cloud images — they're
+  # full VM disks. We need to inject the disk into a new instance.
+  log "Creating VM '$VM_NAME' from snapshot..."
+
+  # Strategy: create a minimal VM, stop it, replace its disk, start it.
+  multipass launch \
+    --name "$VM_NAME" \
+    --cpus "$VM_CPUS" \
+    --memory "$VM_MEMORY" \
+    --disk "$VM_DISK" \
+    "$VM_IMAGE"
+  multipass stop "$VM_NAME"
+
+  local instance_dir="/var/snap/multipass/common/data/multipassd/vault/instances/${VM_NAME}"
+  local target_disk
+  target_disk=$(sudo find "$instance_dir" -maxdepth 1 \( -name "*.img" -o -name "*.qcow2" \) 2>/dev/null | head -1)
+  if [[ -z "$target_disk" ]]; then
+    die "Could not find target disk in $instance_dir"
+  fi
+
+  log "Replacing VM disk with snapshot..."
+  sudo cp "$decompressed" "$target_disk"
+  rm -f "$decompressed"
+
+  log "Starting VM from imported snapshot..."
+  multipass start "$VM_NAME"
+  sleep 3
+
+  # Verify the testnode is inside
+  if run_in_vm "test -d '${NITRO_DIR}'" 2>/dev/null; then
+    log "Import successful! nitro-testnode found in VM."
+  else
+    warn "VM started but nitro-testnode directory not found. The snapshot may be corrupt."
+  fi
+
+  echo ""
+  echo "Next: $0 start   # to set up port forwarding and start testnode"
+}
+
 # ── Usage ────────────────────────────────────────────────────────────────────
 
 usage() {
@@ -531,20 +726,31 @@ Commands:
   time-advance <hrs>   Advance VM clock by N hours (for expiry testing)
   time-reset           Sync VM clock back to real time
   shell                Open an interactive shell in the VM
+  snapshot [name]      Save VM state (default: fresh-init)
+  restore [name]       Restore VM to a saved snapshot
+  export [path]        Export VM disk as .qcow2.zst for CI/sharing
+  import <url|path>    Import a previously exported VM snapshot
 
 Typical first-time workflow:
   $0 setup        # Create VM + install deps (once)
   $0 init         # Initialize chain (once, or to reset)
+  $0 snapshot     # Save the initialized state
   $0 start        # Start testnode + forwarding
 
 Day-to-day:
-  $0 start        # Start
+  $0 start        # Start (or restore + start after time-advance)
   $0 stop         # Stop
   $0 status       # Check everything
 
 Testing activations:
   $0 time-advance 25   # Jump 25 hours
   $0 time-reset        # Back to real time
+
+Snapshots (avoid re-init):
+  $0 snapshot          # Save current state
+  $0 restore           # Restore to saved state (instant)
+  $0 export            # Export for CI or another machine
+  $0 import <url>      # Import on a fresh machine
 EOF
 }
 
@@ -564,6 +770,10 @@ main() {
     time-advance)  cmd_time_advance "$@" ;;
     time-reset)    cmd_time_reset ;;
     shell)         cmd_shell ;;
+    snapshot)      cmd_snapshot "$@" ;;
+    restore)       cmd_restore "$@" ;;
+    export)        cmd_export "$@" ;;
+    import)        cmd_import "$@" ;;
     -h|--help|help|"")
       usage
       ;;

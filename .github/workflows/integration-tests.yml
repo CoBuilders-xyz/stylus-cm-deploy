@@ -1,0 +1,315 @@
+name: Integration Tests
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  FUNDED_PK: "0xb6b15c8cb491557369f3c7d2c287b053eb229daa9c22138887752191c9520659"
+  FUNDED_ADDR: "0x3f1Eae7D46d88F08fc2F8ed27FCb2AB183EB2d0E"
+  L2_OWNER_PK: "0xdc04c5399f82306ec4b4d654a342f40e2e0620fe39950d967e1e574b32d4dd36"
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            submodules/stylus-cm-backend/package-lock.json
+            submodules/stylus-cm-contracts/package-lock.json
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+
+      - name: Install Rust stable (for cargo-stylus)
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Rust 1.83.0 + wasm target (for mock contract)
+        uses: dtolnay/rust-toolchain@1.83.0
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Cache Rust artifacts
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/cargo-stylus
+            ~/.cargo/registry
+            ~/.cargo/git
+            submodules/stylus-cm-contracts/test/utils/mock-wasm-contracts/mock-contract/target
+          key: rust-${{ runner.os }}-${{ hashFiles('submodules/stylus-cm-contracts/test/utils/mock-wasm-contracts/mock-contract/Cargo.lock') }}
+          restore-keys: rust-${{ runner.os }}-
+
+      - name: Install cargo-stylus
+        run: command -v cargo-stylus >/dev/null 2>&1 || cargo +stable install cargo-stylus
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+          ls -la /dev/kvm
+
+      - name: Install system dependencies
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq socat jq
+
+      - name: Install Multipass
+        run: |
+          sudo snap install multipass
+          sleep 5
+          sudo cat /root/snap/multipass/current/data/multipass-client-certificate/multipass_cert.pem \
+            | sudo tee -a /var/snap/multipass/common/data/multipassd/authenticated-certs/multipass_client_certs.pem > /dev/null \
+            || true
+          cat ~/snap/multipass/current/data/multipass-client-certificate/multipass_cert.pem \
+            | sudo tee -a /var/snap/multipass/common/data/multipassd/authenticated-certs/multipass_client_certs.pem > /dev/null \
+            || true
+          sudo snap restart multipass
+          sleep 3
+          multipass version
+
+      # ── Devnode: setup VM, init chain, port forwarding ──────────────────
+      - name: Setup devnode VM
+        env:
+          MULTIPASS_VM_CPUS: "2"
+          MULTIPASS_VM_MEMORY: "4G"
+        run: sudo -E ./scripts/devnode.sh setup
+
+      - name: Initialize devnode chain
+        run: sudo -E ./scripts/devnode.sh init
+
+      - name: Start devnode port forwarding
+        run: |
+          sudo -E ./scripts/devnode.sh start
+          until cast chain-id --rpc-url http://localhost:8547 2>/dev/null; do sleep 2; done
+          echo "Devnode ready — chain ID: $(cast chain-id --rpc-url http://localhost:8547)"
+
+      # ── Deploy contracts (CacheManager + CMA) ──────────────────────────
+      - name: Install contract dependencies
+        working-directory: submodules/stylus-cm-contracts
+        run: npm ci
+
+      - name: Deploy contracts
+        working-directory: submodules/stylus-cm-contracts
+        run: |
+          cat > .env << EOF
+          ARB_LOCAL_FUNDED_PK=$FUNDED_PK
+          ARB_LOCAL_RPC=http://localhost:8547
+          ARB_LOCAL_CACHE_MANAGER_ADDRESS=0x0000000000000000000000000000000000000000
+          ARB_SEPOLIA_RPC=https://placeholder.example.com
+          ARB_SEPOLIA_FUNDED_PK=0x0000000000000000000000000000000000000000000000000000000000000001
+          ARB_ONE_RPC=https://placeholder.example.com
+          ARB_ONE_FUNDED_PK=0x0000000000000000000000000000000000000000000000000000000000000001
+          SUPERPOSITION_RPC=https://placeholder.example.com
+          SUPERPOSITION_FUNDED_PK=0x0000000000000000000000000000000000000000000000000000000000000001
+          EOF
+
+          # 1. Deploy real CacheManager (proxy with full bidding interface)
+          CM_OUTPUT=$(npx hardhat run scripts/deploy/deploy-cache-manager-devnode.ts --network localArb 2>&1)
+          echo "$CM_OUTPUT"
+          CACHE_MANAGER_ADDRESS=$(echo "$CM_OUTPUT" | grep -oP '(?<=CacheManager deployed at: )0x[0-9a-fA-F]+')
+          if [ -z "$CACHE_MANAGER_ADDRESS" ]; then
+            echo "::error::Failed to extract CacheManager address from deploy output"
+            exit 1
+          fi
+          echo "CACHE_MANAGER_ADDRESS=$CACHE_MANAGER_ADDRESS" >> "$GITHUB_ENV"
+
+          # Update .env with real CacheManager address for CMA deployment
+          sed -i "s|ARB_LOCAL_CACHE_MANAGER_ADDRESS=.*|ARB_LOCAL_CACHE_MANAGER_ADDRESS=$CACHE_MANAGER_ADDRESS|" .env
+
+          # 2. Deploy CacheManagerAutomation via Ignition
+          rm -rf ignition/deployments/chain-412346
+          CMA_OUTPUT=$(npm run deploy:local 2>&1)
+          echo "$CMA_OUTPUT"
+          CMA_ADDRESS=$(echo "$CMA_OUTPUT" | grep -oP '(?<=CacheManagerAutomation deployed to: )0x[0-9a-fA-F]+')
+          if [ -z "$CMA_ADDRESS" ]; then
+            echo "::error::Failed to extract CMA address from deploy output"
+            exit 1
+          fi
+          echo "CMA_ADDRESS=$CMA_ADDRESS" >> "$GITHUB_ENV"
+
+          echo "Deployed addresses:"
+          echo "  CacheManager: $CACHE_MANAGER_ADDRESS"
+          echo "  CMA: $CMA_ADDRESS"
+
+      # ── Docker environment files ────────────────────────────────────────
+      - name: Create environment files
+        env:
+          THIRDWEB_SECRET: ${{ secrets.THIRDWEB_API_SECRET_KEY }}
+        run: |
+          echo "Using deployed addresses:"
+          echo "  CACHE_MANAGER_ADDRESS=$CACHE_MANAGER_ADDRESS"
+          echo "  CMA_ADDRESS=$CMA_ADDRESS"
+          cat > src/docker/.env.backend << EOF
+          ENVIRONMENT=local
+          LOGGER_LEVELS=log,error,warn
+          POSTGRES_HOST=scm-db
+          POSTGRES_PORT=5432
+          POSTGRES_USER=scm-db-user
+          POSTGRES_PASSWORD=scm-db-pwd
+          POSTGRES_DB=scm_db
+          POSTGRES_DB_SYNC=true
+          DATABASE_URL=postgres://scm-db-user:scm-db-pwd@scm-db:5432/scm_db
+          REDIS_HOST=scm-redis
+          REDIS_PORT=6379
+          REDIS_URL=redis://scm-redis:6379
+          FRONTEND_URL=http://localhost:5000
+          JWT_SECRET=CI_SECRET_FOR_SIGNING_JWT_TOKENS_1234567890
+          AUTH_NONCE_EXPIRATION=180000
+          JWT_EXPIRES_IN=24h
+          CONTRACT_SMALL_SIZE=800000
+          CONTRACT_MID_SIZE=1600000
+          CONTRACT_LARGE_SIZE=2400000
+          EVENT_TYPES=InsertBid,DeleteBid,Pause,Unpause,SetCacheSize,SetDecayRate,Initialized,ContractAdded,ContractUpdated,ContractRemoved,BalanceUpdated,BidPlaced,BidError,ActivationPerformed,ActivationError,ActivationRevertData,ContractAutoActivateUpdated,ContractMaxActivationCostUpdated
+          EVENT_BLOCK_BATCH_SIZE=1000000
+          BACKOFF_DELAY=0
+          TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
+          BULLMQ_ATTEMPTS=5
+          BULLMQ_BACKOFF_DELAY=10000
+          ARB_ONE_RPC=https://placeholder.example.com
+          ARB_ONE_RPC_WSS=wss://placeholder.example.com
+          ARB_ONE_FAST_SYNC_RPC=https://placeholder.example.com
+          ARB_ONE_ENABLED=false
+          ARB_SEPOLIA_RPC=https://placeholder.example.com
+          ARB_SEPOLIA_RPC_WSS=wss://placeholder.example.com
+          ARB_SEPOLIA_FAST_SYNC_RPC=https://placeholder.example.com
+          ARB_SEPOLIA_ENABLED=false
+          SUPERPOSITION_RPC=https://placeholder.example.com
+          SUPERPOSITION_RPC_WSS=wss://placeholder.example.com
+          SUPERPOSITION_FAST_SYNC_RPC=https://placeholder.example.com
+          SUPERPOSITION_ENABLED=false
+          ARB_LOCAL_RPC=http://host.docker.internal:8547
+          ARB_LOCAL_RPC_WSS=ws://host.docker.internal:8548
+          ARB_LOCAL_FAST_SYNC_RPC=http://host.docker.internal:8547
+          ARB_LOCAL_CMA_ADDRESS=${CMA_ADDRESS}
+          ARB_LOCAL_CACHE_MANAGER_ADDRESS=${CACHE_MANAGER_ADDRESS}
+          ARB_LOCAL_ENABLED=true
+          CMA_AUTOMATION_ENABLED=true
+          CMA_ACTIVATION_AUTOMATION_ENABLED=true
+          ENGINE_BASE_URL=http://scm-engine:3005
+          ENGINE_BACKEND_WALLET_ADDRESS=${FUNDED_ADDR}
+          ENGINE_AUTH_TOKEN=placeholder
+          EOF
+
+          cat > src/docker/.env.engine << EOF
+          ENCRYPTION_PASSWORD=ci-encryption-password-12345
+          THIRDWEB_API_SECRET_KEY=${THIRDWEB_SECRET}
+          ADMIN_WALLET_ADDRESS=${FUNDED_ADDR}
+          BACKEND_WALLET_ADDRESS=${FUNDED_ADDR}
+          POSTGRES_CONNECTION_URL=postgresql://scm-engine-db-user:scm-engine-db-pwd@scm-engine-db:5432/scm_engine_db?sslmode=disable
+          REDIS_URL=redis://scm-engine-redis:6379?family=0
+          PORT=3005
+          HOST=::
+          EOF
+
+          printf 'POSTGRES_USER=scm-db-user\nPOSTGRES_PASSWORD=scm-db-pwd\nPOSTGRES_DB=scm_db\n' > src/docker/.env.scm-db
+          printf 'POSTGRES_USER=scm-engine-db-user\nPOSTGRES_PASSWORD=scm-engine-db-pwd\nPOSTGRES_DB=scm_engine_db\n' > src/docker/.env.engine-db
+
+      # ── Engine: start, configure (token + wallet + chain) ───────────────
+      - name: Start Engine stack
+        run: |
+          docker compose -f src/docker/docker-compose.yaml up -d scm-engine-db scm-engine-redis scm-engine
+          echo "Waiting for Engine..."
+          timeout 120 bash -c 'until curl -sf http://127.0.0.1:3005/system/health > /dev/null 2>&1; do sleep 3; done'
+          echo "Engine ready"
+
+      - name: Configure Engine (chain + wallet + access token)
+        env:
+          ENGINE_SECRET: ${{ secrets.THIRDWEB_API_SECRET_KEY }}
+        run: ./scripts/setup-engine.sh
+
+      # ── Backend: start after Engine is configured ───────────────────────
+      - name: Start backend stack
+        run: |
+          docker compose -f src/docker/docker-compose.yaml up -d scm-db scm-redis scm-backend
+          echo "Waiting for backend container to start..."
+          sleep 10
+
+          echo "=== Port mapping ==="
+          docker port stylus-cm-backend 3000 || echo "WARNING: port 3000 not mapped!"
+
+          echo "=== Container status ==="
+          docker ps --filter name=stylus-cm-backend --format '{{.Status}}'
+
+          echo "=== First probe (verbose) ==="
+          curl -v http://127.0.0.1:3000/blockchains 2>&1 || true
+
+          echo "=== Health check loop ==="
+          timeout 180 bash -c '
+            while true; do
+              code=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:3000/blockchains 2>/dev/null || echo "000")
+              echo "  probe: HTTP $code"
+              if [ "$code" = "200" ]; then exit 0; fi
+              sleep 5
+            done
+          '
+          echo "Backend ready"
+
+      # ── Tests ───────────────────────────────────────────────────────────
+      - name: Install test dependencies
+        working-directory: submodules/stylus-cm-backend
+        run: |
+          sudo rm -rf node_modules
+          npm ci
+
+      - name: Create devnode sudo wrapper
+        run: |
+          printf '#!/bin/bash\nexec sudo -E "%s/scripts/devnode.sh" "$@"\n' "$GITHUB_WORKSPACE" > /tmp/devnode-sudo.sh
+          chmod +x /tmp/devnode-sudo.sh
+
+      - name: Run caching integration tests
+        working-directory: submodules/stylus-cm-backend
+        env:
+          TESTNODE_SCRIPT: /tmp/devnode-sudo.sh
+        run: npx jest --config ./test/jest-e2e.json --testPathPattern cma-caching --runInBand --verbose --forceExit
+
+      - name: Run activation integration tests
+        working-directory: submodules/stylus-cm-backend
+        env:
+          TESTNODE_SCRIPT: /tmp/devnode-sudo.sh
+        run: npx jest --config ./test/jest-e2e.json --testPathPattern cma-activation --runInBand --verbose --forceExit
+
+      - name: Run alerts integration tests
+        working-directory: submodules/stylus-cm-backend
+        env:
+          TESTNODE_SCRIPT: /tmp/devnode-sudo.sh
+          WEBHOOK_URL: ${{ vars.ALERT_WEBHOOK_URL }}
+          TELEGRAM_CHAT_ID: ${{ vars.ALERT_TELEGRAM_CHAT_ID }}
+        run: npx jest --config ./test/jest-e2e.json --testPathPattern alerts --runInBand --verbose --forceExit
+
+      # ── Debugging on failure ────────────────────────────────────────────
+      - name: Collect logs on failure
+        if: failure()
+        run: |
+          echo "::group::Deployed addresses"
+          echo "CACHE_MANAGER_ADDRESS=$CACHE_MANAGER_ADDRESS"
+          echo "CMA_ADDRESS=$CMA_ADDRESS"
+          echo "FUNDED_ADDR=$FUNDED_ADDR"
+          echo "::endgroup::"
+          echo "::group::Backend env (addresses)"
+          grep -E '(CACHE_MANAGER|CMA_ADDRESS|ENGINE_AUTH_TOKEN)' src/docker/.env.backend 2>/dev/null || true
+          echo "::endgroup::"
+          echo "::group::Backend logs"
+          docker compose -f src/docker/docker-compose.yaml logs scm-backend --tail=300 2>&1 || true
+          echo "::endgroup::"
+          echo "::group::Engine logs"
+          docker compose -f src/docker/docker-compose.yaml logs scm-engine --tail=100 2>&1 || true
+          echo "::endgroup::"
+          echo "::group::Devnode status"
+          sudo ./scripts/devnode.sh status 2>&1 || true
+          echo "::endgroup::"
+
+      - name: Cleanup
+        if: always()
+        run: |
+          docker compose -f src/docker/docker-compose.yaml down -v 2>&1 || true
+          sudo ./scripts/devnode.sh destroy 2>&1 || true
