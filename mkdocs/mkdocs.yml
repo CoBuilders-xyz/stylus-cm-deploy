@@ -25,6 +25,7 @@ nav:
           - Eviction Risk: deep-dive/eviction-risk.md
           - Place Bid: deep-dive/place-bid.md
           - Bid Automations: deep-dive/bid-automations.md
+  - API Reference: api-reference.md
   - Deployment:
       - Arbitrum Knowledge Base:
           - Deploy Local Testnode: local-deployment/arbitrum/deployment.md
