@@ -17,6 +17,9 @@ nav:
               - Bid Automation: getting-started/stylus-cache-manager-ui/tutorials/bid-automation.md
               - Gas Tank: getting-started/stylus-cache-manager-ui/tutorials/gas-tank.md
               - Alerts: getting-started/stylus-cache-manager-ui/tutorials/alerts.md
+  - Tutorials:
+      - Contract Activation: tutorials/activation.md
+      - Contract Caching: tutorials/caching.md
   - Deep Dive:
       - Overview: deep-dive/overview.md
       - Fundamentals:

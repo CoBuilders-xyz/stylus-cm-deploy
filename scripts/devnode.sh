@@ -251,6 +251,7 @@ cmd_init() {
     --dev \
     --http.addr 0.0.0.0 \
     --http.vhosts=* \
+    --http.corsdomain=* \
     --http.api=net,web3,eth,debug \
     --ws.addr 0.0.0.0 \
     --ws.api=net,web3,eth,debug'"

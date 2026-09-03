@@ -3,8 +3,9 @@ out
 bin
 target
 node_modules
+mkdocs/site/
 
 .env.backend
 .env.engine
 .env.engine-db
-.env.scm-db 
+.env.scm-db
