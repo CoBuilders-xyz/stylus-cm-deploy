@@ -3,37 +3,38 @@ hide:
   - toc
 ---
 
-### **Welcome to the Stylus Cache Manager 🚀**
+!!! info "Archived documentation"
 
-This documentation serves as the **go-to resource** for developers, testers, and users interacting with the **Stylus Cache Manager**. Whether you’re integrating smart contracts, setting up automation, or deploying the system, you’ll find everything you need here.
+    This page is retained as historical reference. For the current Stylus Manager release, use the [activation, caching, and deployment guides](../index.md). Commands and architecture in archived notes may describe earlier versions.
+
+# **Stylus Manager Documentation Archive**
+
+These pages preserve earlier experiments and setup notes for **Stylus Manager**. For activation, caching, automation, and alerts in the current release, start with the [current documentation](../index.md).
 
 ---
 
-## 🔹 **What is the Cache Manager?**
+## 🔹 **Stylus Manager today**
 
-The **Stylus Cache Manager** optimizes contract execution by allowing contracts to reserve and maintain storage in the cache layer. This system enables faster access and **reduces gas costs** for frequently used contracts. However, contracts must actively **bid for cache space**—this is where our **automation** and **bidding logic** come into play.
+**Stylus Manager** manages activation and caching as separate workflows. Its backend workers submit automated cache bids and reactivation transactions through ThirdWeb Engine. `CacheManagerAutomation` and `BiddingEscrow` provide the shared on-chain automation and funding layer.
 
-Our solution provides:  
-✅ **Smart contract interactions** for managing bids and cache slots.  
-✅ **Automated bidding** using Chainlink Automation.  
-✅ **A user-friendly dApp** to simplify contract management.
+Earlier notes in this archive include Chainlink experiments. Those experiments do not describe the current worker architecture.
 
 ---
 
 ## 📌 **Getting Started**
 
-If you’re new to the system, follow these guides:
+For historical reference, the earlier guides are retained here:
 
-📖 [**Cache Manager Info**](getting-started/01-cmUsefulInfo.md) – Understand the core mechanics of CacheManager.  
-⚙️ [**Nitro Test Node**](getting-started/02-nitroTestNodeRunAndAddresses.md) – Set up and interact with a local Nitro test node.  
-🔗 [**CM Interactions**](getting-started/03-cacheManagerInteractions.md) – Learn how to manually interact with CacheManager.  
+📖 [**CacheManager Reference**](getting-started/01-cmUsefulInfo.md) – Understand the core mechanics of CacheManager.
+⚙️ [**Nitro Test Node**](getting-started/02-nitroTestNodeRunAndAddresses.md) – Set up and interact with a local Nitro test node.
+🔗 [**CacheManager Interactions**](getting-started/03-cacheManagerInteractions.md) – Learn how to manually interact with CacheManager.
 🛠️ [**Guided Testing**](getting-started/04-CmGuidedTesting.md) – Step-by-step testing workflow.
 
 ---
 
 ## 🏗️ **Project Components**
 
-### 🔷 **Stylus CM Contracts**
+### 🔷 **Stylus Manager Automation Contracts**
 
 - **[Overview](stylus-cm-contracts/overview.md)** – Dive into the contract architecture.
 - **[Local Testing](stylus-cm-contracts/testing.md)** – Set up and test contracts locally with Foundry & Hardhat.

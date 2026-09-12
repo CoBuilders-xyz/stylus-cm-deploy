@@ -1,3 +1,7 @@
+!!! info "Archived documentation"
+
+    This page is retained as historical reference. For the current Stylus Manager release, use the [activation, caching, and deployment guides](../../index.md). Commands and architecture in archived notes may describe earlier versions.
+
 # **📜 RPC Cheatsheet**
 
 ## 🔹 **Useful Environment Variables**
@@ -12,7 +16,7 @@ export ARBLOC_RPC="http://localhost:8547"
 export L1LOC_RPC="http://localhost:8545"
 ```
 
-### **Cache Manager Addresses**
+### **CacheManager Addresses**
 
 ```bash
 export ARBONE_CM=0x51dedbd2f190e0696afbee5e60bfde96d86464ec
@@ -85,7 +89,7 @@ cargo stylus deploy --private-key $ACC_PK --no-verify
 
 ---
 
-## **⚙️ Cache Manager Useful Commands**
+## **⚙️ CacheManager Useful Commands**
 
 ### **🔎 Check Rust Contract Before Deployment**
 
@@ -105,7 +109,7 @@ cargo stylus deploy --private-key $ACC_PK --no-verify --endpoint=$RPC
 cargo stylus activate --private-key $ACC_PK --address=$SC_ADD
 ```
 
-### **📊 Check Cache Manager Status**
+### **📊 Check CacheManager Status**
 
 ```bash
 cargo stylus cache status --endpoint=$RPC
@@ -117,7 +121,7 @@ cargo stylus cache status --endpoint=$RPC
 cargo stylus cache status --endpoint=$RPC --address=$SC_ADD
 ```
 
-### **💰 Suggest Cache Manager Bid Size**
+### **💰 Suggest CacheManager Bid Size**
 
 #### **Stylus CLI**
 
@@ -131,7 +135,7 @@ cargo stylus cache suggest-bid $SC_ADD --endpoint=$RPC
 cast from-wei $(cast call $CM_ADD "getMinBid(address)(uint256)" $SC_ADD --rpc-url $RPC)
 ```
 
-### **💸 Send Cache Manager Bid**
+### **💸 Send CacheManager Bid**
 
 #### **Stylus CLI**
 
@@ -156,7 +160,7 @@ cast send $CM_ADD "placeBid(address)" $SC_ADD --rpc-url $RPC --private-key $ACC_
 
 ---
 
-## **🛠️ Cache Manager Admin Interactions**
+## **🛠️ CacheManager Admin Interactions**
 
 ### **📦 Set Cache Size (Bytes)**
 

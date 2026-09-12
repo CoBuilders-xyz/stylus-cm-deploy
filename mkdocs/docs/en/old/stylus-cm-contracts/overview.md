@@ -1,34 +1,26 @@
-# 🚀 CacheManagerAutomation Overview
+!!! info "Archived documentation"
 
-## 📌 Introduction
+    This page is retained as historical reference. For the current Stylus Manager release, use the [activation, caching, and deployment guides](../../index.md). Commands and architecture in archived notes may describe earlier versions.
 
-The **CacheManagerAutomation (CMA)** is a powerful smart contract designed to automate the bidding process for Arbitrum's **CacheManager**. Users can seamlessly register their contracts, set maximum bid amounts, and deposit funds to keep their contracts cached. The automation is handled by **Chainlink Automation**, ensuring continuous and efficient re-bidding based on predefined conditions. ⚡
+# 🚀 Stylus Manager Automation Contracts
 
-## 🔑 Key Features
+## 📌 Current architecture
 
-### 1️⃣ Automated Bidding 🤖
+Stylus Manager uses **CacheManagerAutomation (CMA)** and **BiddingEscrow** for automated cache bidding and reactivation. The Solidity names remain unchanged in v2.
 
-- Users can register contracts they wish to keep cached.
-- Each contract is linked with:
-  - 💰 **Maximum Bid Amount** – Defines the highest amount a user is willing to spend.
-  - 🏦 **Funding Balance** – Ensures there are sufficient funds for automated bidding.
-  - 🎯 **Trigger Condition** – Determines when a re-bid should be placed.
+- **Cache bid automation** is controlled by `biddingEnabled` and the per-bid `maxBid` limit.
+- **Auto-activation** is controlled independently by `autoActivate` and `maxActivationCost`.
+- Both features use the user's shared **Gas Tank** balance in `BiddingEscrow` on the selected deployment.
+- The backend workers select eligible programs and submit transactions through **ThirdWeb Engine**. Earlier Chainlink experiments in this archive describe a previous design.
 
-### 2️⃣ Chainlink-Powered Automation 🔗⚡
+## 📚 Current guides
 
-- 🛠️ Integrated with **Chainlink Automation** to monitor contract eviction status.
-- 🔄 Automatically re-bids **upon eviction** to maintain caching.
+- [Automation contract deployment](../../local-deployment/stylus-cache-manager-ui/deploy-cma-contracts.md)
+- [Cache bid automation](../../deep-dive/bid-automations.md)
+- [Activation lifecycle](../../deep-dive/activation-lifecycle.md)
+- [Gas Tank](../../getting-started/stylus-cache-manager-ui/tutorials/gas-tank.md)
+- [v2 compatibility and audit notes](../../releases/stylus-manager-v2.md)
 
-### 3️⃣ Flexible & Secure Configuration 🔒
+## 🧪 Testing
 
-- The **CacheManager address** is set during deployment but can be updated by the **owner** if necessary.
-- User funds are securely stored within the proxy and utilized for bidding based on pre-configured conditions.
-
-## 🧪 Local Testing
-
-The contract supports **local testing** on the **localArb** chain 🛠️.
-
-- 🖥️ **RPC URL for local testing**: `http://localhost:8547`
-- 📦 A simulated **CacheManager** instance is available for running tests.
-
-🔍 Ready to automate your cache bidding? Get started today! 🚀
+Use the test instructions shipped with the current `stylus-cm-contracts` submodule. The archived [testing notes](testing.md) describe the earlier suite and should be read in that context.

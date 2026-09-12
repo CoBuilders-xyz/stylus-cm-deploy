@@ -1,69 +1,65 @@
 ---
 icon: material/bell
-hide: toc
 ---
 
-# **Tutorials**
+# **🔔 Set Up Alerts**
 
-> **Get started fast!** Here's how to use the Stylus Cache Manager UI for the most important actions—step by step, with visuals to guide you.
+> **Monitor both contract activation and caching.** Configure delivery channels once, then enable the alert types and channels for each saved contract.
 
----
+## **Step 1: Configure delivery channels**
 
-## **🔔 Set Up Alerts**
+Open the notification settings icon in the header, or choose **Notification settings** from **Commands**.
 
-Stay informed with real-time alerts for key contract events.
+- **Telegram:** start the configured notification bot and enter your chat ID.
+- **Slack:** enter an incoming webhook URL.
+- **Webhook:** enter an endpoint for your own receiver.
 
-To start, open the **Alert Settings** section to configure your preferred notification channels.
-
-<figure markdown="span">
-  ![Alert Settings Main](./assets/alerts-navbar.png){ width="500" }
-</figure>
-
-### **Step 1: Configure Your Notification Channels**
-
-You can choose from the following options:
-
-- **Telegram** — Set your Telegram Chat ID and start a conversation with [@stylusCmNotifications_bot](https://t.me/stylusCmNotifications_bot).
-- **Slack** — Provide a valid Slack Webhook URL.
-- **Webhook** — Use any compatible Webhook endpoint for custom integrations.
-
-Each channel has a **Test** button to validate the connection before saving.
+Use the channel's test action and save the configuration.
 
 <figure markdown="span">
-  ![Alert Channels Config](./assets/alerts-general.png){ width="500" }
+  ![Recorded webhook destination settings using a disposable tutorial endpoint.](../../../tutorials/assets/activation-alerts-01-webhook-settings.png){ width="700" }
 </figure>
 
-Once you're done, click **Save Alert Settings** to apply your global channel configuration.
+The endpoint in the snapshot is a throwaway tutorial destination. Use your own destination for delivery.
 
----
+## **Step 2: Choose contract alerts**
 
-### **Step 2: Enable Alerts for a Specific Contract**
+Open the contract and select **Manage alerts**, or **Contract Alerts** from its actions menu. Choose channels for each enabled alert.
 
-Select the contract you want to monitor and go to **Set Contract Alerts** and
+| Cache alert | Trigger or setting |
+| --- | --- |
+| **Eviction** | The program leaves the cache. |
+| **No Gas** | The user's automation balance is empty. |
+| **Low Gas** | The balance falls below the threshold you set in ETH. |
+| **Bid Safety** | The current auction minimum approaches the effective bid, using your configured margin. |
 
 <figure markdown="span">
-  ![Per Contract Settings](./assets/alerts-per-contract-select.png){ width="600" }
+  ![Contract alert settings with an eviction webhook enabled.](../../../tutorials/assets/cache-alerts-01-eviction-config.png){ width="700" }
 </figure>
 
-You’ll see the following alert types:
-
-- **Eviction** — Notifies you when your contract is evicted from the cache.
-- **No Gas** — Alerts you when your gas balance is insufficient for automated bidding.
-- **Low Gas** — Triggers when your balance drops below a custom threshold.
-  → You can set the threshold manually in ETH.
-- **Bid Safety** — Warns you when the minimum bid approaches your current bid.
-  → Use the slider to adjust the sensitivity.
-
-For each alert type, select the channels where you want to receive notifications:
-
-- Telegram
-- Slack
-- Webhook
+| Activation alert | Trigger or setting |
+| --- | --- |
+| **Approaching expiration** | Remaining activation lifetime falls within your configured number of days. |
+| **Expired** | The expiration check finds no remaining activation lifetime. |
+| **Reactivation succeeded** | CMA reports a successful activation. |
+| **Reactivation failed** | CMA reports a failed activation attempt. |
 
 <figure markdown="span">
-  ![Alert Contract Types](./assets/alerts-per-contract-settings.png){ width="400" }
+  ![Per-contract activation alert settings from the recorded lifecycle session.](../../../tutorials/assets/activation-alerts-02-contract-alerts.png){ width="700" }
 </figure>
 
-When finished, click **Save Alert Settings** to confirm your preferences for that contract.
+A required Stylus upgrade is visible in activation status and supported by auto-activation, but the current expiration-alert evaluator does not explicitly turn that error into an Expired notification.
 
----
+Expiration monitoring and automation success/failure are different signals. A direct wallet activation can restore the state without generating a CMA reactivation alert.
+
+## **Step 3: Save and verify**
+
+Select **Save Alert Settings**. Return to the contract and check the **Cache alerts** and **Activation alerts** summaries.
+
+<figure markdown="span">
+  ![The contract summarizing enabled activation alerts.](../../../tutorials/assets/activation-alerts-03-enabled.png){ width="700" }
+</figure>
+
+Some alerts follow indexed events; others run on periodic checks. Indexing delay, channel delivery, cooldowns, and retry backoff affect when a notification arrives. This release has no dedicated “re-cached” alert: verify cache recovery through status and **Bid History**.
+
+For recorded webhook payloads and controlled local tests, see the [activation tutorial](../../../tutorials/activation.md#set-up-activation-alerts) and [caching tutorial](../../../tutorials/caching.md#set-up-cache-alerts).

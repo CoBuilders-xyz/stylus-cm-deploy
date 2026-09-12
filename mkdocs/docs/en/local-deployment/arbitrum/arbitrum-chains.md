@@ -1,6 +1,6 @@
 # **Arbitrum Chains**
 
-Complete reference for all Arbitrum chains with RPC endpoints, Cache Manager addresses, and essential configuration data.
+Complete reference for all Arbitrum chains with RPC endpoints, CacheManager addresses, and essential configuration data.
 
 ---
 
@@ -23,7 +23,7 @@ Complete reference for all Arbitrum chains with RPC endpoints, Cache Manager add
     SEQUENCER_ENDPOINT: https://arb1-sequencer.arbitrum.io/rpc
     ```
 
-    ### **Cache Manager**
+    ### **CacheManager**
     ```yaml
     CACHE_MANAGER: 0x51dedbd2f190e0696afbee5e60bfde96d86464ec
     ```
@@ -55,7 +55,7 @@ Complete reference for all Arbitrum chains with RPC endpoints, Cache Manager add
     SEQUENCER_ENDPOINT: https://nova-sequencer.arbitrum.io/rpc
     ```
 
-    ### **Cache Manager**
+    ### **CacheManager**
     ```yaml
     CACHE_MANAGER: 0x20586f83bf11a7cee0a550c53b9dc9a5887de1b7
     ```
@@ -87,7 +87,7 @@ Complete reference for all Arbitrum chains with RPC endpoints, Cache Manager add
     SEQUENCER_ENDPOINT: https://sepolia-rollup-sequencer.arbitrum.io/rpc
     ```
 
-    ### **Cache Manager**
+    ### **CacheManager**
     ```yaml
     CACHE_MANAGER: 0x0c9043d042ab52cfa8d0207459260040cca54253
     ```
@@ -123,7 +123,7 @@ Complete reference for all Arbitrum chains with RPC endpoints, Cache Manager add
     L1_RPC: http://localhost:8545
     ```
 
-    ### **Cache Manager**
+    ### **CacheManager**
     ```yaml
     CACHE_MANAGER: 0x0f1f89aaf1c6fdb7ff9d361e4388f5f3997f12a8
     ```
