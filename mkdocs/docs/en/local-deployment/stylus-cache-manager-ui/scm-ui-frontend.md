@@ -1,17 +1,18 @@
-# **🖥️ SCM UI Frontend Deployment**
+# **🖥️ Stylus Manager Frontend Deployment**
 
-> **Deploy the Stylus Cache Manager frontend** - the modern web interface that provides an intuitive way to manage your Stylus contracts, place bids, and configure automated bidding.
+> **Deploy the Stylus Manager frontend** - the modern web interface that provides an intuitive way to activate Stylus programs, place cache bids, and configure both automations.
 
 ---
 
-## **🎯 What is the SCM UI Frontend?**
+## **🎯 What is the Stylus Manager Frontend?**
 
-The **SCM UI Frontend** is a Next.js web application that provides:
+The **Stylus Manager Frontend** is a Next.js web application that provides:
 
 - **🔐 Wallet Authentication:** Secure login with Ethereum wallets
 - **📋 Contract Management:** View and organize your Stylus contracts
+- **⚡ Activation:** Manual activation, lifetime monitoring, auto-activation, and history
 - **💰 Manual Bidding:** Place bids directly from the web interface
-- **🤖 Automation Setup:** Configure automated bidding strategies
+- **🤖 Automation Setup:** Configure independent bidding and reactivation limits
 - **📊 Real-time Analytics:** Monitor cache status and bid performance
 - **🔔 Alert Management:** Set up and manage notification preferences
 - **🌐 Multi-chain Support:** Work with multiple Arbitrum networks
@@ -22,7 +23,7 @@ The **SCM UI Frontend** is a Next.js web application that provides:
 
 Before deploying the frontend, ensure you have:
 
-- **✅ SCM UI Backend** running and accessible
+- **✅ Stylus Manager Backend** running and accessible
 - **✅ Node.js** (v22 or higher) and **npm**
 - **✅ Modern web browser** with wallet extension (MetaMask, etc.)
 - **✅ Funded wallet** for testing transactions
@@ -64,12 +65,14 @@ Add the following configuration to `.env`:
 NEXT_PUBLIC_API_URL=http://localhost:3000
 
 # Default Chain Configuration
-NEXT_PUBLIC_DEFAULT_CHAIN_ID=421614
+NEXT_PUBLIC_DEFAULT_CHAIN_ID=412346
 ```
 
 !!! tip "Chain Configuration"
 
-    We're using **Arbitrum Sepolia** (chain ID: 421614) as the default network for testing. You can change this to any supported Arbitrum network.
+    Use **Arbitrum Sepolia** (`421614`) for a configured testnet backend or **Arbitrum Local** (`412346`) for the local-only setup. Production typically selects **Arbitrum One** (`42161`). The default must be enabled by the backend; it does not switch the wallet automatically.
+
+The frontend expects CMA v2. Its contract address comes from the backend `/blockchains` response, not a frontend environment variable. Build the frontend after changing `NEXT_PUBLIC_*` settings.
 
 ### **Supported Networks**
 
@@ -88,7 +91,7 @@ NEXT_PUBLIC_DEFAULT_CHAIN_ID=421614
 Ensure all dependencies are installed:
 
 ```bash
-npm install
+npm ci
 ```
 
 ### **Start Development Server**
@@ -130,17 +133,19 @@ Verify the following functionality:
 - **✅ Network Detection:** Correct network is detected
 - **✅ API Communication:** Backend API is responding
 - **✅ Contract Loading:** Your contracts are displayed
-- **✅ Navigation:** All menu items are accessible
+- **✅ Activation:** List/detail status, manual action availability, and history agree on the selected chain
+- **✅ Automation:** Saving one control preserves the other, and the Gas Tank uses the expected CMA
+- **✅ Navigation:** Menus, search, status filters, and **Ctrl+K / ⌘K** are accessible
 
 ---
 
 ## **✅ Deployment and System Complete**
 
-Congratulations! Your SCM UI Frontend is now **🖥️ Running on port 5000** at http://localhost:5000
+Congratulations! Your Stylus Manager Frontend is now **🖥️ Running on port 5000** at http://localhost:5000
 
-You've successfully deployed the complete Stylus Cache Manager system:
+You've successfully deployed the complete Stylus Manager system:
 
-- **📦 Smart Contracts** - CMA contracts deployed
+- **📦 Smart Contracts** - Stylus Manager automation contracts deployed
 - **🤖 ThirdWeb Engine** - Automation service configured
 - **🔧 Backend API** - Data processing and management
 - **🖥️ Frontend UI** - User interface and interactions

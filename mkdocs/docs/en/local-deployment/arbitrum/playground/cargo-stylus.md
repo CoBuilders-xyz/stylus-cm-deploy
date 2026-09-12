@@ -77,7 +77,7 @@ cargo stylus cache suggest-bid $SC_ADD --endpoint $RPC
 
 For more information about the Stylus contract cache system:
 
-- **Stylus Cache Manager Documentation**: [https://docs.arbitrum.io/stylus/concepts/stylus-cache-manager](https://docs.arbitrum.io/stylus/concepts/stylus-cache-manager)
+- **Arbitrum CacheManager Documentation**: [https://docs.arbitrum.io/stylus/concepts/stylus-cache-manager](https://docs.arbitrum.io/stylus/concepts/stylus-cache-manager)
 - **Arbitrum Stylus Documentation**: [https://docs.arbitrum.io/stylus/](https://docs.arbitrum.io/stylus/)
 
 ---

@@ -1,3 +1,7 @@
+!!! info "Archived documentation"
+
+    This page is retained as historical reference. For the current Stylus Manager release, use the [activation, caching, and deployment guides](../../index.md). Commands and architecture in archived notes may describe earlier versions.
+
 # **🛠️ Running a Local Nitro Testnode**
 
 ## 🔄 **Clone the Repository**
@@ -82,7 +86,7 @@ PK: 0xecdf21cb41c65afb51f91df408b7656e2c8739a5877f2814add0afd780cc210e
 
 ---
 
-# **🗄️ Cache Manager Contracts**
+# **🗄️ CacheManager Contracts**
 
 | **Contract**                               | **Address**                                                                                                                                  |
 | ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |

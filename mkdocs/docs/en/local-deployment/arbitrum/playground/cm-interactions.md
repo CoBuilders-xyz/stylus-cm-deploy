@@ -1,6 +1,6 @@
-# **⚙️ Cache Manager Interactions Guide**
+# **⚙️ CacheManager Interactions Guide**
 
-This guide covers two ways to interact with Arbitrum's Cache Manager: **Cargo Stylus CLI** for streamlined contract management and **Foundry** for direct contract interactions.
+This guide covers two ways to interact with Arbitrum's CacheManager: **Cargo Stylus CLI** for streamlined contract management and **Foundry** for direct contract interactions.
 
 ---
 

@@ -1,16 +1,16 @@
 # **📦 Clone the Repository**
 
-> **Set up your development environment** by cloning the Stylus Cache Manager repository with all its submodules and dependencies.
+> **Set up your development environment** by cloning the Stylus Manager repository with all its submodules and dependencies.
 
 ---
 
 ## **🔗 Repository Structure**
 
-The Stylus Cache Manager project consists of several interconnected components:
+The Stylus Manager project consists of several interconnected components:
 
 - **📦 Main Repository:** Deployment scripts and configuration
-- **🔧 Smart Contracts:** Cache Manager Automation contracts
-- **🤖 Backend API:** RESTful service for cache management
+- **🔧 Smart Contracts:** Stylus Manager automation contracts (`CacheManagerAutomation` and `BiddingEscrow`)
+- **🤖 Backend API:** REST API for activation, caching, and alerts
 - **🖥️ Frontend UI:** Next.js web application
 
 ---
@@ -26,7 +26,7 @@ cd stylus-cm-deploy
 
 !!! success "All-in-One Setup"
 
-    This command automatically downloads all submodules and their dependencies, giving you a complete development environment.
+    This command downloads the recorded submodule commits. Install their package dependencies separately below.
 
 ---
 
@@ -45,6 +45,22 @@ git submodule update --init --recursive
 
 ---
 
+## **🔄 Follow the Merged Release**
+
+The repository records exact submodule commits for reproducible checkouts. To deliberately update to the latest merged release, start with clean submodules and run:
+
+```bash
+git pull --ff-only origin main
+for module in stylus-cm-contracts stylus-cm-backend stylus-cm-frontend stylus-cm-nginx; do
+  git -C "submodules/$module" switch main || break
+  git -C "submodules/$module" pull --ff-only origin main || break
+done
+git -C submodules/nitro-testnode switch release
+git -C submodules/nitro-testnode pull --ff-only origin release
+```
+
+Nitro uses this fork's `release` branch; the four Stylus Manager submodules use `main`. Record updated submodule pointers in the parent repository when preparing a release.
+
 ## **📦 Install Dependencies**
 
 ### **Option 1: Automated Setup (Recommended)**
@@ -62,15 +78,15 @@ If you prefer manual control, install dependencies for each submodule:
 ```bash
 # Backend dependencies
 cd submodules/stylus-cm-backend
-npm install
+npm ci
 
 # Frontend dependencies
 cd ../stylus-cm-frontend
-npm install
+npm ci
 
 # Smart contracts dependencies
 cd ../stylus-cm-contracts
-npm install
+npm ci
 
 # Return to root directory
 cd ../../
@@ -111,6 +127,6 @@ This command copies all `.example` environment files to their active versions:
 
 With your repository cloned, dependencies installed, and environment files initialized, you're ready to:
 
-1. **[Deploy CMA Contracts](deploy-cma-contracts.md)** - Deploy smart contracts to your chosen network
+1. **[Deploy Automation Contracts](deploy-cma-contracts.md)** - Deploy smart contracts to your chosen network
 2. **[Configure ThirdWeb Engine](third-web-engine.md)** - Set up automation services
-3. **[SCM UI Backend](scm-ui-backend.md)** - Configure the backend API
+3. **[Stylus Manager Backend](scm-ui-backend.md)** - Configure the backend API

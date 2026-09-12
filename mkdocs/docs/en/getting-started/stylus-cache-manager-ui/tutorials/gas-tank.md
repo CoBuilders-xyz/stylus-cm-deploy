@@ -1,43 +1,44 @@
 ---
 icon: material/gas-station
-hide: toc
 ---
 
-# **Tutorials**
+# **⛽ Manage the Gas Tank**
 
-> **Get started fast!** Here's how to use the Stylus Cache Manager UI for the most important actions—step by step, with visuals to guide you.
+> **One automation balance for activation and caching.** The Gas Tank holds your ETH in the selected CMA deployment's escrow. Both automated cache bids and automated activations draw from it.
 
----
+## **Step 1: Deposit funds**
 
-## **⛽ Manage Gas Tank**
-
-The **Gas Tank** holds the ETH balance used for automated bidding transactions.
-
-To deposit funds, open the **Gas Tank** from the navbar.
+Select the Gas Tank balance in the header, open **Deposit**, and enter an amount in ETH. Read the acknowledgement, select **Deposit Gas**, and confirm the wallet transaction.
 
 <figure markdown="span">
-  ![Gas Tank Modal](./assets/gas-tank-modal.png){ width="400" }
+  ![Recorded Gas Tank deposit form.](../../../tutorials/assets/activation-gas-tank-02-deposit-form.png){ width="500" }
 </figure>
 
-Enter the amount of ETH you want to deposit.
-This balance will be used when the automation logic places a bid on your behalf.
-
-Click **Deposit Gas** and confirm the transaction in your wallet.
+The deposit must meet the deployment's minimum deposit and maximum user-balance limits. Wait for confirmation, then refresh the balance.
 
 <figure markdown="span">
-  ![Gas Tank Amount Input](./assets/gas-tank-input.png){ width="400" }
+  ![Confirmed Gas Tank balance in the recorded session.](../../../tutorials/assets/activation-gas-tank-01-funded.png){ width="600" }
 </figure>
 
-After the transaction is confirmed, your updated balance will be reflected in the Gas Tank.
+## **Step 2: Budget for both automations**
+
+Cache bids can reduce the balance available for a future activation, and vice versa. For auto-activation to run, the available balance must cover the full configured **Max activation cost**. Each limit applies to one operation; future operations can spend again while enabled and funded.
+
+Manual activation and manual bidding use your wallet directly. Keep wallet ETH available for transaction gas when saving settings, depositing, withdrawing, or acting manually.
+
+!!! info "Balances are deployment-specific"
+
+    Changing the chain or moving from CMA v1 to v2 selects a different escrow balance. Existing deposits are not automatically transferred. See the [v2 upgrade notes](../../../releases/stylus-manager-v2.md#upgrading-to-stylus-manager-v2).
+
+## **Step 3: Withdraw unused funds**
+
+Open **Withdraw**, review the available balance, and select **Withdraw All Gas**. Confirm the transaction and verify that the Gas Tank balance updates.
 
 <figure markdown="span">
-  ![Gas Tank Amount Updated](./assets/gas-tank-updated.png){ width="400" }
+  ![Recorded withdrawal dialog for the Gas Tank.](assets/gas-tank-withdraw.png){ width="500" }
+  <figcaption>This wallet-flow snapshot predates the v2 visual refresh; the current action is Withdraw All Gas.</figcaption>
 </figure>
 
-To withdraw your funds, switch to the Withdraw tab—you can withdraw the full balance at any time.
+The current UI withdraws the **entire unused balance** to your connected account. Withdrawal does not switch off your automation settings. Disable the relevant controls as well if you want to stop future automation after funding again.
 
-<figure markdown="span">
-  ![Gas Tank Withdraw](./assets/gas-tank-withdraw.png){ width="400" }
-</figure>
-
----
+Some retained UI text describes the balance as bidding-only or says an audit is pending. The balance also funds activation; the contracts v2 audit is linked in [the release notes](../../../releases/stylus-manager-v2.md#contract-audit).

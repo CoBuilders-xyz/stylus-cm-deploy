@@ -1,6 +1,6 @@
 # **🤖 ThirdWeb Engine Configuration**
 
-> **Set up ThirdWeb Engine for automated transaction execution** - the self-hosted automation service that handles automated bidding for your Stylus contracts.
+> **Set up ThirdWeb Engine for automated transaction execution** - the self-hosted automation service that submits automated cache bids and reactivation transactions for your Stylus contracts.
 
 ---
 
@@ -25,7 +25,7 @@ Before configuring ThirdWeb Engine, ensure you have:
 
 - **Docker & Docker Compose** installed and running
 - **ThirdWeb Account** (free registration at [thirdweb.com](https://thirdweb.com))
-- **Deployed CMA Contracts** from the previous step
+- **Deployed automation contracts** from the previous step
 - **Access to a deployment wallet** for configuration
 
 ---
@@ -340,6 +340,6 @@ Congratulations! Your ThirdWeb Engine is now configured and ready to:
 
 ## **🔧 Next Steps**
 
-With Engine configured, proceed to **[SCM UI Backend](scm-ui-backend.md)** - Configure the backend API service
+With Engine configured, proceed to **[Stylus Manager Backend](scm-ui-backend.md)** - Configure the backend API service
 
 ---

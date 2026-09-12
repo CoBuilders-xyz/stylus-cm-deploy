@@ -1,44 +1,43 @@
 ---
 icon: material/book
-hide: toc
 ---
 
-# **Tutorials**
+# **📋 Add and Manage Your Contracts**
 
-> **Get started fast!** Here's how to use the Stylus Cache Manager UI for the most important actions—step by step, with visuals to guide you.
+> **Keep activation and cache status together.** Connect your wallet, sign in, and select the network where your contract is deployed.
 
----
+## **Step 1: Enter the contract address**
 
-## **📋 Add a Contract to "My Contracts"**
-
-After logging in, go to the **My Contracts** section from the navbar and Click **+ Add Contract** button.
+Open **My Contracts** and select **+ Add Contract**. Enter the full deployed address and let the app validate it.
 
 <figure markdown="span">
-  ![My Contracts Section](./assets/my-contracts-section.png){ width="700" }
+  ![Add Contract validates a deployed Stylus program and shows its activation requirement.](../../../tutorials/assets/activation-platform-01-unactivated.png){ width="700" }
 </figure>
 
-Enter your contract address
+If activation is required, follow [Activate a Contract](activation.md). The address must refer to a Stylus program on the selected chain.
+
+## **Step 2: Give it a name**
+
+Continue to the name step, enter an optional display name, and select **Add Contract**.
 
 <figure markdown="span">
-  ![My Contracts Address](./assets/my-contracts-address.png){ width="700" }
+  ![Naming the recorded demo program before adding it to My Contracts.](../../../tutorials/assets/activation-platform-03-name.png){ width="700" }
 </figure>
 
-and (optionally) a label or description.
+Saving a contract adds it to your account's list. It does not fund the Gas Tank or enable automation.
+
+## **Step 3: Inspect both tabs**
+
+Select the saved contract to open its details. Use the list's search, status filters, and pagination to find programs as the list grows.
 
 <figure markdown="span">
-  ![My Contracts Name](./assets/my-contracts-name.png){ width="700" }
+  ![Saved contract details with Cache and Activation tabs.](../../../tutorials/assets/activation-platform-04-status-and-automation.png){ width="700" }
 </figure>
 
-Click **Add Contract**. The contract will now appear in your list.
+- **Activation** shows current activation state, lifetime, auto-activation settings, and automation history.
+- **Cache** shows cache membership, bidding, eviction risk, and bid history.
+- **Manage alerts** configures notifications for the selected contract.
 
-<figure markdown="span">
-  ![My Contracts Name](./assets/my-contracts-redirect.png){ width="700" }
-</figure>
+Check the full address and selected network before taking an action. A contract can be **Active** and **Not Cached** at the same time.
 
-When clicking a contract, details panel will show up
-
-<figure markdown="span">
-  ![My Contracts Name](./assets/my-contracts-details.png){ width="700" }
-</figure>
-
----
+Next: [Activate a Contract](activation.md), [Place a Bid](place-bid.md), or [Set Up Alerts](alerts.md).

@@ -1,38 +1,37 @@
 ---
 icon: material/arrow-collapse-down
-hide: toc
 ---
 
-# **Tutorials**
+# **💰 Place a Cache Bid**
 
-> **Get started fast!** Here's how to use the Stylus Cache Manager UI for the most important actions—step by step, with visuals to guide you.
+> **Reserve cache space for an active program.** Manual bids use your connected wallet's ETH. First [activate the program](activation.md) if needed.
 
----
+## **Step 1: Open the Cache tab**
 
-## **💰 Place a Bid**
-
-In **My Contracts**, select the contract you want to manage.
+In **My Contracts**, select the contract and open **Cache**. Check that the address is correct and the status is **Not Cached**.
 
 <figure markdown="span">
-  ![Place Bid Section](./assets/place-bid.png){ width="600" }
+  ![The recorded active program before its first cache bid.](../../../tutorials/assets/cache-platform-01-not-cached.png){ width="700" }
 </figure>
 
-When clicking bid secion, suggestions will popup. Sometimes getting your contract cached can be free!
+## **Step 2: Review the minimum and enter a bid**
+
+In **Bid now**, review the current suggestions and choose an amount at least equal to the current minimum. Suggestions are guidance about auction pressure, not a guaranteed cache lifetime.
 
 <figure markdown="span">
-  ![Place Bid Suggestions](./assets/place-bid-suggestion.png){ width="600" }
+  ![Manual bid form using the local devnode zero-value minimum.](../../../tutorials/assets/cache-platform-02-manual-bid.png){ width="700" }
 </figure>
 
-Enter your bid amount in Bid Now section click "Place Bid" and confirm the transaction details.
+The recorded local example uses `0 ETH` because there was available space. Your network may require a positive bid. Even a zero-value bid requires transaction gas.
+
+## **Step 3: Confirm and verify**
+
+Select **Place Bid**, switch the wallet network if prompted, and confirm the transaction. After its receipt, verify **Cached** and the **Manual Bid** entry in **Bid History**.
 
 <figure markdown="span">
-  ![Place Bid Action](./assets/place-bid-action.png){ width="600" }
+  ![The demo contract cached after its manual bid, with bid history.](../../../tutorials/assets/cache-platform-03-manual-cached.png){ width="700" }
 </figure>
 
-Wait for confirmation and the UI will update your contract's cache status.
+Manual bidding is disabled while the codehash is already cached. If a bid fails because the auction moved, refresh the minimum before trying again. If the contract is later evicted, it can still execute while its activation remains valid.
 
-<figure markdown="span">
-  ![Place Bid Completed](./assets/place-bid-completed.png){ width="600" }
-</figure>
-
----
+Next: [Cache Bid Automation](bid-automation.md), [Alerts](alerts.md), or the full [caching tutorial](../../../tutorials/caching.md).

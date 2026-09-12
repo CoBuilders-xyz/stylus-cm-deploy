@@ -1,3 +1,7 @@
+!!! info "Archived documentation"
+
+    This page is retained as historical reference. For the current Stylus Manager release, use the [activation, caching, and deployment guides](../../index.md). Commands and architecture in archived notes may describe earlier versions.
+
 ## RPC Cheatsheet
 
 - Deploy EVM VendingMachine contract
@@ -39,7 +43,7 @@ cargo stylus deploy --private-key 0xb6b15c8cb491557369f3c7d2c287b053eb229daa9c22
     }
     ```
 
-## Local Cache Manager Interactions
+## Local CacheManager Interactions
 
 Get Min Bid For Contract
 
@@ -116,7 +120,7 @@ Test Big Contracts ()
 0x48b75b8bb49c0d566bf0a451c649105397969f76
 0x2097b9e6872830dbe6769dda79df3f1927b43fde
 
-## ARB Sepolia Cache Manager Interactions
+## ARB Sepolia CacheManager Interactions
 
 counterTest Contract
 
@@ -140,7 +144,7 @@ Successfully cached contract at address: 0xfD5518940C627aa12B875c14de16d54Fd5e03
 Sent Stylus cache bid tx with hash: 0xc4f68e83b00618339e8132cfdb08bf0d2f7f887ca0820271a4d75d0cefd72a0f
 ```
 
-## Chainlink Tests
+## Historical Chainlink Tests
 
 Required envs can be sourced with
 
@@ -184,9 +188,9 @@ cast call $CONTRACT_ADD "counter()" 0x  --rpc-url $L1LOC_RPC --private-key $ARBP
 
 Address: 0xdaaA70D0884Ec86CEaE83c544963c545a4213246
 
-### Automated CM Proxy Local
+### Historical Local Automation Contract
 
-CM Address: 0x0f1F89AAF1c6fDb7ff9D361E4388F5F3997f12A8
+CacheManager address: 0x0f1F89AAF1c6fDb7ff9D361E4388F5F3997f12A8
 SC To Be Cached: 0xd542490eba60e4b4d28d23c5b392b1607438f3cc
 
 Deploy Proxy

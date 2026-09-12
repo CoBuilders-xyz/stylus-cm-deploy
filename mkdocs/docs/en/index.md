@@ -3,57 +3,46 @@ hide:
   - toc
 ---
 
-# **Welcome to the Stylus Cache Manager 🚀**
+# **Welcome to Stylus Manager 🚀**
 
-This documentation is meant for anyone working with the **Stylus Cache Manager (CM)** – from smart-contract developers and dev-ops engineers to testers and end-users running their own deployments.
+**Stylus Manager** helps developers and operators manage both **activation** and **caching** for Stylus contracts on Arbitrum. It brings wallet actions, lifecycle monitoring, automation, and alerts into one web app.
 
-Stylus CM sits on top of Arbitrum’s **CacheManager** contract and provides everything you need to **reserve, monitor, and automatically maintain cache slots** for high-performance Stylus applications.
-
----
-
-## 🔹 What is the Cache Manager?
-
-On Arbitrum, stylus contracts can bid for dedicated space in a low-latency **WASM cache**. Holding a slot dramatically **reduces gas costs** and speeds up hot-path calls, but it requires managing periodic bids to keep the slot alive.
-
-Stylus Cache Manager simplifies this process by providing:
-
-- **Smart-contracts** that encapsulate bidding logic and escrow-based fund management.
-- **Automation jobs** that keep your bids active 24/7.
-- **A full-featured web UI** with live dashboards, alerting, and one-click actions.
-- **Deployment scripts** so you can run the entire stack locally or on-prem.
+Previously called **Stylus Cache Manager**, the project now covers the program lifecycle as well as the cache auction. The underlying contracts keep their names: **ArbWasm** handles activation, **CacheManager** handles caching, and **CacheManagerAutomation (CMA)** coordinates automated operations.
 
 ---
 
-## 🏗️ Project at a glance
+## **🔹 Two jobs, one workspace**
 
-This repository is a **meta-project** that pulls together several sub-modules:
+| Job | What it does | What you can do in Stylus Manager |
+| --- | --- | --- |
+| **Activation** | Makes deployed WASM executable for the chain's current Stylus version. | Activate manually, inspect remaining lifetime, configure automatic reactivation, and receive expiration alerts. |
+| **Caching** | Reserves space in the WASM cache to reduce repeated-call gas costs. | Place bids, inspect cache status and bid history, configure automatic bidding, and receive eviction alerts. |
 
-| Sub-module            | Description                                                 |
-| --------------------- | ----------------------------------------------------------- |
-| `stylus-cm-contracts` | Solidity / Stylus contracts + tests                         |
-| `stylus-cm-backend`   | REST & WebSocket API powering the UI and automation agents  |
-| `stylus-cm-frontend`  | Next.js dApp for interacting with Cache Manager and Backend |
-| `stylus-cm-nginx`     | Reverse-proxy with TLS & static assets                      |
-| `nitro-testnode`      | Arbitrum Nitro local node for testing                       |
+An active contract can run without a cache slot. A cache slot does not replace a valid activation. Start with the [activation and caching basics](getting-started/cache-manager-basics.md) to understand both states.
 
 ---
 
-## 🚀 Quick links
+## **🚀 Choose your next step**
 
-- Public dApp: **<https://stylus.cobuilders.xyz>**
-- Source code: **<https://github.com/cobuilders-xyz/stylus-cm-deploy>**
-- Live docs (this site): **<https://cobuilders-xyz.github.io/stylus-cm-deploy/>**
+- **Use the app:** follow the [UI overview](getting-started/stylus-cache-manager-ui/overview.md) and its screenshot-guided tutorials.
+- **Try the full workflows:** [activate a contract](tutorials/activation.md) or [cache a contract](tutorials/caching.md) using Cargo, Hardhat, or Stylus Manager.
+- **Upgrade an installation:** review [what changed in v2](releases/stylus-manager-v2.md), including CMA compatibility and database migrations.
+- **Integrate or self-host:** explore the [API reference](api-reference.md) and [deployment guide](local-deployment/stylus-cache-manager-ui/overview.md).
 
----
+## **🏗️ Project at a glance**
 
-## 📌 Next steps
+| Submodule | Purpose |
+| --- | --- |
+| `stylus-cm-contracts` | CMA and escrow contracts, deployment records, tests, and audit report. |
+| `stylus-cm-backend` | REST API, blockchain indexing, activation and bidding workers, and notifications. |
+| `stylus-cm-frontend` | Next.js app for activation, caching, funding, and monitoring. |
+| `stylus-cm-nginx` | Reverse proxy configuration. |
+| `nitro-testnode` | Local Arbitrum node for testing. |
 
-Ready to dive in?
+Repository names and existing documentation URLs retain `stylus-cm` for continuity.
 
-1. Head over to **[Getting Started ➜ Cache Manager Basics](getting-started/cache-manager-basics.md)** for a conceptual overview.
-2. Spin up a **local Arbitrum test node** and interact with CM by following **Guided Testing**.
-3. When you’re comfortable, deploy the **full system with Docker Compose** or explore other deployment options.
+## **🔗 Quick links**
 
-Use the navigation panel to explore every part of Stylus Cache Manager.
-
-> 💡 **Tip:** Documentation is a work in progress. If you spot an issue or want to contribute, open a PR or file an issue on GitHub!
+- Public app: **<https://stylus.cobuilders.xyz>**
+- Source: **<https://github.com/cobuilders-xyz/stylus-cm-deploy>**
+- Documentation: **<https://cobuilders-xyz.github.io/stylus-cm-deploy/>**
