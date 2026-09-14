@@ -1,8 +1,12 @@
-# **🔗 Cache Manager Reference**
+!!! info "Archived documentation"
 
-## 📜 **Cache Manager Contract**
+    This page is retained as historical reference. For the current Stylus Manager release, use the [activation, caching, and deployment guides](../../index.md). Commands and architecture in archived notes may describe earlier versions.
 
-The Cache Manager is a **core smart contract** that manages the cache bidding system on Arbitrum. It ensures contracts can **reserve cache slots**, optimizing performance and execution costs.
+# **🔗 CacheManager Reference**
+
+## 📜 **CacheManager Contract**
+
+The CacheManager is a **core smart contract** that manages the cache bidding system on Arbitrum. It ensures contracts can **reserve cache slots**, optimizing performance and execution costs.
 
 📌 **[View Source Code](https://github.com/OffchainLabs/nitro-contracts/blob/94999b3e2d3b4b7f8e771cc458b9eb229620dd8f/src/chain/CacheManager.sol#L4) (ARB GitHub)**
 
@@ -10,7 +14,7 @@ The Cache Manager is a **core smart contract** that manages the cache bidding sy
 
 ## 🌍 **Arbitrum RPC Endpoints**
 
-Use the following RPC endpoints to interact with the Cache Manager on different Arbitrum networks:
+Use the following RPC endpoints to interact with the CacheManager on different Arbitrum networks:
 
 | **Network**             | **RPC Endpoint**                                      |
 | ----------------------- | ----------------------------------------------------- |
@@ -21,17 +25,17 @@ Use the following RPC endpoints to interact with the Cache Manager on different 
 
 ---
 
-## 📍 **Retrieve Cache Manager Address**
+## 📍 **Retrieve CacheManager Address**
 
-To obtain the Cache Manager contract address on any network, run the following command:
+To obtain the CacheManager contract address on any network, run the following command:
 
 ```sh
 cargo stylus cache status --endpoint=<RPC_ENDPOINT>
 ```
 
-### 🔹 **Cache Manager Addresses per Network**
+### 🔹 **CacheManager Addresses per Network**
 
-| **Network**             | **Cache Manager Address**                    |
+| **Network**             | **CacheManager Address**                    |
 | ----------------------- | -------------------------------------------- |
 | 🟢 **Arbitrum One**     | `0x51dedbd2f190e0696afbee5e60bfde96d86464ec` |
 | 🟠 **Arbitrum Nova**    | `0x20586f83bf11a7cee0a550c53b9dc9a5887de1b7` |

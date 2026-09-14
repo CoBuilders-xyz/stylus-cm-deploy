@@ -1,15 +1,15 @@
-# **🔧 SCM UI Backend Deployment**
+# **🔧 Stylus Manager Backend Deployment**
 
-> **Deploy the Stylus Cache Manager backend API** - the core service that handles contract management, automated bidding, and real-time blockchain event processing.
+> **Deploy the Stylus Manager backend API** - the core service that handles contract management, activation and caching automation, and blockchain event processing.
 
 ---
 
-## **🎯 What is the SCM UI Backend?**
+## **🎯 What is the Stylus Manager Backend?**
 
-The **SCM UI Backend** is a comprehensive API service that provides:
+The **Stylus Manager Backend** is a comprehensive API service that provides:
 
 - **📊 Real-time Data Processing:** Syncs blockchain events and maintains cache state
-- **🤖 Automation Management:** Handles automated bidding logic and ThirdWeb Engine integration
+- **🤖 Automation Management:** Handles independent bidding and reactivation workers through ThirdWeb Engine
 - **🔐 Authentication:** Manages user sessions and wallet authentication
 - **📱 RESTful APIs:** Provides endpoints for frontend communication
 - **🔔 Notification System:** Sends alerts via Telegram and other channels
@@ -21,7 +21,7 @@ The **SCM UI Backend** is a comprehensive API service that provides:
 
 Before deploying the backend, ensure you have:
 
-- **✅ Deployed CMA Contracts** from the previous step
+- **✅ Deployed automation contracts** from the previous step
 - **✅ Configured ThirdWeb Engine** with access token and backend wallet
 - **✅ Docker & Docker Compose** running
 - **✅ PostgreSQL & Redis** (handled by Docker Compose)
@@ -43,7 +43,7 @@ cp src/docker/.env.scm-db.example src/docker/.env.scm-db
 
 !!! tip "Database Configuration"
 
-    For local testing, the SCM database environment can remain as in the example. The Docker Compose setup handles all database initialization.
+    For local testing, the Stylus Manager database environment can remain as in the example. The Docker Compose setup handles all database initialization.
 
 ---
 
@@ -58,21 +58,23 @@ Configure blockchain connections via environment variables in `src/docker/.env.b
 ARB_ONE_RPC=
 ARB_ONE_RPC_WSS=
 ARB_ONE_FAST_SYNC_RPC=https://arbitrum.rpc.hypersync.xyz
+ARB_ONE_FAST_SYNC_RPC_ACCESS_TOKEN=
 ARB_ONE_CMA_ADDRESS=
 ARB_ONE_ENABLED=false
 
-# Arbitrum Sepolia (Testing) - Enabled
+# Arbitrum Sepolia (Testing) - Enable only when configured
 ARB_SEPOLIA_RPC=https://sepolia-rollup.arbitrum.io/rpc
 ARB_SEPOLIA_RPC_WSS=wss://sepolia-rollup.arbitrum.io/ws
 ARB_SEPOLIA_FAST_SYNC_RPC=https://arbitrum-sepolia.rpc.hypersync.xyz
-ARB_SEPOLIA_CMA_ADDRESS=0x1B38ABF292a39F659916A9e7074aB1C3407196A9
-ARB_SEPOLIA_ENABLED=true
+ARB_SEPOLIA_FAST_SYNC_RPC_ACCESS_TOKEN=
+ARB_SEPOLIA_CMA_ADDRESS=0xYOUR_OPERATED_SEPOLIA_CMA_V2
+ARB_SEPOLIA_ENABLED=false
 
 # Arbitrum Local (Development) - Enabled
 ARB_LOCAL_RPC=http://host.docker.internal:8547
 ARB_LOCAL_RPC_WSS=ws://host.docker.internal:8548
 ARB_LOCAL_FAST_SYNC_RPC=http://host.docker.internal:8547
-ARB_LOCAL_CMA_ADDRESS=0xA6E41fFD769491a42A6e5Ce453259b93983a22EF
+ARB_LOCAL_CMA_ADDRESS=0xYOUR_LOCAL_CMA_V2
 ARB_LOCAL_ENABLED=true
 ```
 
@@ -123,41 +125,58 @@ TELEGRAM_BOT_TOKEN=your_telegram_bot_token_here
 
 ---
 
-## **🌐 Nginx Configuration**
+## **⚙️ Activation and Caching Workers**
 
-### **Switch to Local Branch**
+Configure each worker independently in `src/docker/.env.backend`:
 
-For local testing without CORS restrictions, switch to the local branch:
-
-```bash
-cd submodules/stylus-cm-nginx
-git checkout local
-cd ../../
+```dotenv
+CMA_AUTOMATION_ENABLED=true
+CMA_ACTIVATION_AUTOMATION_ENABLED=true
 ```
 
-!!! info "CORS Configuration"
+Set either flag to `false` to stop that backend worker. These flags do not rewrite users' on-chain settings. If omitted, caching defaults to `true` and activation to `false`.
 
-    The local branch removes CORS checks for easier local development. For production, use the main branch with proper CORS settings.
+Use one automation deployment per chain/CMA pair, with an Engine wallet funded for transaction gas. User Gas Tank funds pay bid and activation value. Supply the optional `ARB_*_FAST_SYNC_RPC_ACCESS_TOKEN` when the fast-sync provider requires authentication. Never put these tokens in frontend variables.
+
+## **💾 Database Migrations in v2**
+
+| `ENVIRONMENT` | Schema behavior |
+| --- | --- |
+| `local`, `develop` | TypeORM synchronizes entities at startup. Use a disposable development database. |
+| `staging`, `production` | Pending migrations run at startup; synchronization is disabled. |
+
+This release adds migrations for `Contract.biddingEnabled`, activation columns, and the four activation alert types. `POSTGRES_DB_SYNC` is not read by this backend.
+
+From the backend directory, with its database environment configured:
+
+```bash
+npm run migration:show
+npm run migration:run
+```
+
+For an existing installation, verify the schema and take a database backup before upgrading. A previously synchronized database may already contain the columns; baseline only the migrations whose changes are present, using the procedure in the [backend migration guide](https://github.com/CoBuilders-xyz/stylus-cm-backend/tree/deb412c#database-migrations). Do not mark missing schema changes as applied.
+
+Startup migration assumes a single application instance. Before scaling to multiple replicas, move migration to a coordinated pre-deploy step or add a database lock.
+
+## **🌐 Local Access and Nginx**
+
+Keep the Nginx submodule on `main`. Its checked-in configuration targets Railway's private backend hostname and the public app origin; it is not the local Compose proxy configuration.
+
+For this local guide, access the backend directly at `http://localhost:3000` and set the frontend's `NEXT_PUBLIC_API_URL` to that address. `ENVIRONMENT=local` permits local browser origins. For production, configure `FRONTEND_URL` and your reverse proxy's upstream/origin rules for the actual deployment.
 
 ---
 
 ## **🚀 Deploy Backend Services**
 
-### **Automated Deployment**
+### **Local Deployment**
 
-Use the npm script to start all backend services:
-
-```bash
-npm run backend:start
-```
-
-### **Manual Deployment**
-
-Or deploy manually with Docker Compose:
+Start the local backend and its dependencies:
 
 ```bash
-docker compose -f src/docker/docker-compose.yaml up -d scm-db scm-redis scm-backend scm-nginx
+docker compose -f src/docker/docker-compose.yaml up -d scm-db scm-redis scm-backend
 ```
+
+The Compose dependency graph also starts ThirdWeb Engine. Configure its environment first. The root `npm run backend:start` additionally starts Nginx; use it only after adapting the proxy configuration to your environment.
 
 ### **Service Management**
 
@@ -187,7 +206,7 @@ After starting the backend, you should see extensive synchronization logs:
 docker compose -f src/docker/docker-compose.yaml logs -f scm-backend
 ```
 
-**Expected Log Output:**
+**Example of historical sync logs:**
 
 ```
 [Nest] 30  - 07/18/2025, 8:03:47 PM   DEBUG [DataProcessing - InsertBid] No contract found for 0x66a8332553D190dd6b5a0d7083a13a5C596Cb1E7, creating new entry
@@ -198,7 +217,7 @@ docker compose -f src/docker/docker-compose.yaml logs -f scm-backend
 
 ### **Database Verification**
 
-Check that blockchain data is being populated:
+Check that blockchain data is being populated. These retained database snapshots predate the activation columns; verify the current schema and migration status as well:
 
 <figure markdown="span">
   ![Backend DB Blockchains](./assets/backend-success-db.png){ width="500" }
@@ -210,13 +229,13 @@ Check that blockchain data is being populated:
 
 !!! success "Sync Success"
 
-    You should see all configured blockchains and extensive event data loaded into the database.
+    Verify enabled blockchains, CMA v2 addresses, indexed events, and activation state. Then open `/api` and confirm that list/detail responses include `programTimeLeft` and `programTimeLeftReason`.
 
 ---
 
 ## **✅ Deployment Complete**
 
-Congratulations! Your SCM UI Backend is now:
+Congratulations! Your Stylus Manager Backend is now:
 
 - **📊 Syncing blockchain events** in real-time
 - **🤖 Connected to ThirdWeb Engine** for automation
@@ -228,4 +247,4 @@ Congratulations! Your SCM UI Backend is now:
 
 ## **🔧 Next Steps**
 
-With the backend deployed, proceed to **[SCM UI Frontend](scm-ui-frontend.md)** - Deploy the frontend web application
+With the backend deployed, proceed to **[Stylus Manager Frontend](scm-ui-frontend.md)** - Deploy the frontend web application

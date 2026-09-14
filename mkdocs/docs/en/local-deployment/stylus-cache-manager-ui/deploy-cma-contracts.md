@@ -1,206 +1,75 @@
-# **📦 Deploy CMA Contracts**
+# **📦 Deploy Automation Contracts**
 
-> **Deploy Cache Manager Automation smart contracts** to enable automated bidding functionality for your Stylus contracts.
+> **CacheManagerAutomation v2.0.0** coordinates automated cache bidding and reactivation. Its constructor creates a **BiddingEscrow** for user funds and receives the addresses of CacheManager, ArbWasmCache, and ArbWasm.
 
----
+## **Published v2 deployments**
 
-## **🎯 What Are CMA Contracts?**
+These are the deployment records shipped with the September 2026 release. They are CMA addresses, not CacheManager addresses.
 
-The **Cache Manager Automation (CMA)** contracts provide the smart contract foundation for:
+| Network | CacheManagerAutomation v2.0.0 | BiddingEscrow |
+| --- | --- | --- |
+| Arbitrum One | `0x42affF7D0e6649fc006B5Dd9131373f869e622AF` | `0xC70eA08fDC7c036681E2982cF96B5B4640dbBEF7` |
+| Arbitrum Sepolia | `0x4f64b21496B319dCaef26EDd165cab3039f5aD86` | `0x888718dB940bC666DBBa44F59bE77f1e174D605c` |
 
-- **🤖 Automated Bidding:** Execute bids automatically based on configured rules
-- **💰 Bid Management:** Handle bid placement, updates, and withdrawals
-- **🔒 Security:** Secure automation logic with proper access controls
-- **📊 Monitoring:** Track bid status and automation performance
+Sources: [One deployment PR](https://github.com/CoBuilders-xyz/stylus-cm-contracts/pull/24), [Sepolia deployment PR](https://github.com/CoBuilders-xyz/stylus-cm-contracts/pull/23), and the versioned files under `submodules/stylus-cm-contracts/ignition/deployments/`.
 
----
+A self-hosted automation worker should use a deployment it operates. Do not start an additional worker against a public CMA already served by another operator.
 
-## **🌐 Supported Networks**
+## **⚙️ Prepare a deployment**
 
-The deployment scripts support multiple Arbitrum networks:
-
-| **Network**             | **Environment** | **Use Case**                  |
-| ----------------------- | --------------- | ----------------------------- |
-| 🏠 **Local Testnode**   | Development     | Local testing and development |
-| 🔵 **Arbitrum Sepolia** | Staging         | Integration testing           |
-| 🟢 **Arbitrum One**     | Production      | Live production deployment    |
-
-We also suport any kind of Arbitrum Orbit Chain that has their Cache Manager contract deployed.
-
-!!! tip "Network Selection"
-
-    In this guide we will be using **Arbitrum Sepolia** and **Arbitrum Local Testnode**.
-
----
-
-## **⚙️ Configuration Setup**
-
-### **1. Navigate to Contracts Directory**
+From the repository root:
 
 ```bash
 cd submodules/stylus-cm-contracts
+npm ci
+test -f .env || cp .env.example .env
 ```
 
-### **2. Environment Configuration**
+Configure the target network's RPC and funded deployer using `.env.example` and `config/networks.ts`. For example, the local signer uses `ARB_LOCAL_FUNDED_PK`, while Sepolia uses `ARB_SEPOLIA_FUNDED_PK`. Keep private keys in your local environment file.
 
-Copy the example environment file and configure your deployment settings:
+Review `config/constants.ts` and `config/deployment-config.ts`. The target chain must provide the Stylus precompiles and a working CacheManager. Confirm all three addresses before deployment.
 
-```bash
-cp .env.example .env
-```
+## **🚀 Run Hardhat Ignition**
 
-Edit the `.env` file with your network-specific configuration:
+Choose one target:
 
 ```bash
-# Sepolia configuration (optional)
-ARB_SEPOLIA_FUNDED_ADDRESS=your_sepolia_wallet_address
-ARB_SEPOLIA_FUNDED_PK=your_sepolia_private_key
-
-# Local testnode configuration (optional)
-ARB_LOCAL_FUNDED_ADDRESS=your_sepolia_wallet_address
-ARB_LOCAL_FUNDED_PK=your_local_private_key
-```
-
-!!! warning "Private Key Security"
-
-    Never commit your `.env` file to version control. Ensure it's listed in `.gitignore`.
-
----
-
-## **🚀 Deployment Commands**
-
-### **Local Testnode Deployment**
-
-Deploy to your local Arbitrum testnode:
-
-```bash
+# Disposable local Nitro devnode
 npm run deploy:local
-```
 
-Or run the deployment script directly:
-
-```bash
-npx hardhat run scripts/deploy/deploy-cache-manager-automation.ts --network localArb
-```
-
-**Expected Output:**
-
-```json
-📊 Deployment Summary:
-{
-  "network": "localArb",
-  "cacheManagerAutomation": "0xA6E41fFD769491a42A6e5Ce453259b93983a22EF",
-  "deployer": "0x3f1Eae7D46d88F08fc2F8ed27FCb2AB183EB2d0E",
-  "timestamp": "2025-07-17T23:04:10.642Z"
-}
-```
-
-### **Arbitrum Sepolia Deployment**
-
-Deploy to Arbitrum Sepolia testnet:
-
-```bash
+# Arbitrum Sepolia
 npm run deploy:sepolia
+
+# Arbitrum One
+npm run deploy:arbitrum
 ```
 
-Or run the deployment script directly:
+These scripts run `scripts/deploy/deploy-cache-manager-automation-ignition.ts`. The direct equivalent for a local deployment is:
 
 ```bash
-npx hardhat run scripts/deploy/deploy-cache-manager-automation.ts --network arbitrumSepolia
+npx hardhat run scripts/deploy/deploy-cache-manager-automation-ignition.ts --network localArb
 ```
 
-**Expected Output:**
+The script derives the Ignition module version from `package.json` (`2.0.0` → `CacheManagerAutomation_2_0_0`). Ignition records deployments by chain under `ignition/deployments/chain-<chainId>/deployed_addresses.json` and may reuse a recorded deployment. Inspect the records before assuming a command will create a new contract.
 
-```json
-📊 Deployment Summary:
-{
-  "network": "arbitrumSepolia",
-  "cacheManagerAutomation": "0x1B38ABF292a39F659916A9e7074aB1C3407196A9",
-  "deployer": "0x3f1Eae7D46d88F08fc2F8ed27FCb2AB183EB2d0E",
-  "timestamp": "2025-07-17T23:04:54.430Z"
-}
-```
+### **Local CacheManager setup**
 
-!!! success "Deployment Success"
-
-    Congratulations! Your Cache Manager Automation contracts are now deployed and ready to use.
-
----
-
-## **🔧 Custom Network Configuration**
-
-To add support for additional Arbitrum-compatible networks, modify these files:
-
-### **Deployment Configuration**
-
-Edit `config/deployment-config.ts` to add new network configurations:
-
-```typescript
-export const deploymentConfigs = {
-  // Add your custom network here
-  customNetwork: {
-    cacheManagerAddress: CACHE_MANAGER_ADDRESSES.customNetwork,
-    arbWasmCacheAddress: ARB_WASM_CACHE_ADDRESSES.customNetwork,
-    maxContractsPerUser: DEFAULT_CONFIG.maxContractsPerUser,
-    maxUserFunds: DEFAULT_CONFIG.maxUserFunds,
-    upgradeDelay: DEFAULT_CONFIG.upgradeDelay,
-    verify: true,
-    // ... other configuration
-  },
-};
-```
-
-### **Constants Configuration**
-
-Update `config/constants.ts` with network-specific constants:
-
-```typescript
-// Contract addresses by network
-export const CACHE_MANAGER_ADDRESSES = {
-  arbitrumOne: '0x51dedbd2f190e0696afbee5e60bfde96d86464ec',
-  arbitrumSepolia: '0x0c9043d042ab52cfa8d0207459260040cca54253',
-  localArb: '0x0f1f89aaf1c6fdb7ff9d361e4388f5f3997f12a8',
-  customNetwork: '0x0000000000000000000000000000000000000000',
-};
-
-export const ARB_WASM_CACHE_ADDRESSES = {
-  arbitrumOne: '0x0000000000000000000000000000000000000072',
-  arbitrumSepolia: '0x0000000000000000000000000000000000000072',
-  localArb: '0x0000000000000000000000000000000000000072',
-  customNetwork: '0x0000000000000000000000000000000000000072',
-};
-```
-
-### **CustomNetwork Deployment**
-
-For deploying the CMA contracts into your custom network you can run
-
-```
-npx hardhat run scripts/deploy/deploy-cache-manager-automation.ts --network customNetwork
-
-```
-
----
-
-## **📋 Post-Deployment Steps**
-
-After successful deployment:
-
-1. **📝 Save Contract Addresses:** Note the deployed contract addresses for configuration
-2. **🔗 Update Configuration:** Use the addresses in your backend and frontend configuration
-3. **✅ Verify Deployment:** Check contract verification on block explorers (if applicable)
-
-### **Return to Root Directory**
+If your disposable Nitro devnode needs a CacheManager, the repository provides:
 
 ```bash
-cd ../../
+npx hardhat run scripts/deploy/deploy-cache-manager-devnode.ts --network localArb
 ```
 
----
+This script is restricted to `localArb` and requires the devnode chain-owner authority for registration. It uses the tracked `abis/external/cacheManager.abi.json` artifact by default. It is not a public-network deployment command.
 
-## **🔧 Next Steps**
+## **✅ Verify and configure the stack**
 
-With your contracts deployed, proceed to:
+1. Record the CMA address and read its `escrow()`, `cacheManager()`, `arbWasmCache()`, `arbWasm()`, and `owner()` values.
+2. Inspect funding, bid, user-count, and batch limits on-chain. Values in configuration files or constructor defaults do not establish the current deployed settings.
+3. Set `ARB_LOCAL_CMA_ADDRESS`, `ARB_SEPOLIA_CMA_ADDRESS`, or `ARB_ONE_CMA_ADDRESS` in the backend environment.
+4. Use the v2 frontend and backend ABIs together. The frontend receives the CMA address from `/blockchains`; there is no separate frontend CMA-address variable.
+5. Configure the Engine worker and independently enable caching and activation automation as needed.
 
-1. **[Configure ThirdWeb Engine](third-web-engine.md)** - Set up automation services
-2. **[SCM UI Backend](scm-ui-backend.md)** - Configure the backend API
+For a custom Orbit chain, add its network to `config/networks.ts`, all three contract addresses to `config/constants.ts`, and an entry in `config/deployment-config.ts` including `arbWasmAddress`. Confirm that the chain supports the required Stylus behavior.
+
+See [v2 compatibility and audit notes](../../releases/stylus-manager-v2.md), then continue with [ThirdWeb Engine](third-web-engine.md) and [Backend Deployment](scm-ui-backend.md).

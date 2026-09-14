@@ -4,7 +4,7 @@ icon: material/arrow-collapse-down
 
 # **Place Bid**
 
-Placing a bid reserves a cache slot for your contract on Arbitrum. When you use the **"Bid Now"** feature in the frontend, you're making a direct transaction with the CacheManager contract to secure cache space for your contract.
+A successful bid reserves cache space for an active Stylus program on Arbitrum. When you use the **"Bid Now"** feature in the frontend, you're making a direct transaction with the CacheManager contract to secure cache space for your contract.
 
 ---
 
@@ -36,6 +36,8 @@ Where:
 
 ---
 
+Manual bids use your wallet balance, not the Gas Tank. The program must be active, the codehash must not already be cached, and your wallet must use the selected chain. Even a zero-value bid requires transaction gas.
+
 ## **Bid Amount Selection**
 
 ### **Suggested Bid Levels**
@@ -44,7 +46,7 @@ The frontend provides three suggested bid amounts based on current market condit
 
 - **High Risk Bid**: The minimum amount needed to get into the cache
 - **Mid Risk Bid**: A safer amount that's less likely to be outbid
-- **Low Risk Bid**: The most secure amount for long-term cache retention
+- **Low Risk Bid**: A higher suggested amount for lower relative eviction risk
 
 These suggestions are calculated using the same logic described in [Bid Suggestions](bid-suggestions.md).
 
@@ -60,7 +62,7 @@ You can also enter a custom bid amount, but it must be **At least the minimum bi
 
 1. **Transaction Confirmation**: Your bid is recorded on the blockchain
 2. **Cache Queue Entry**: Your contract enters the cache queue
-3. **Effective Bid Calculation**: Your bid starts with a time decay bonus
+3. **Auction Accounting**: CacheManager records the bid with its internal time-decay term
 4. **Status Update**: The frontend updates to show your contract's new status
 
 ### **Time Decay Bonus**
@@ -91,7 +93,7 @@ The system continuously monitors your [eviction risk](eviction-risk.md) by compa
 
 ### **Rebidding Considerations**
 
-Since manual rebidding isn't practical for active cache management, consider:
+The UI disables manual bidding while the program is cached. After eviction, you can bid again manually or let automation attempt recovery. Consider:
 
 - **Setting up eviction alerts** to know when your contract is evicted
 - **Enabling bid automation** for continuous cache maintenance
@@ -102,4 +104,4 @@ Since manual rebidding isn't practical for active cache management, consider:
 
 - [Effective Bid](effective-bid.md) - Understanding how your bid decays over time
 - [Bid Suggestions](bid-suggestions.md) - How the system calculates recommended amounts
-- [Bid Automations](bid-automations.md) - Automated bidding for continuous cache management
+- [Cache Bid Automation](bid-automations.md) - Automated bidding for continuous cache management

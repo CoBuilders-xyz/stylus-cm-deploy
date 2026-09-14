@@ -66,7 +66,7 @@ To see all available configuration options:
 
 ## **Node Data and Configuration**
 
-For detailed information about accounts, contracts, and network configuration, see the **[Test Node Data](test-node-data.md)** section.
+For detailed information about accounts, contracts, and network configuration, see the **[Arbitrum Chains](arbitrum-chains.md)** section.
 
 ---
 
