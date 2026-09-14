@@ -1,47 +1,45 @@
 ---
 icon: material/autorenew
-hide: toc
 ---
 
-# **Tutorials**
+# **⚙️ Configure Cache Bid Automation**
 
-> **Get started fast!** Here's how to use the Stylus Cache Manager UI for the most important actions—step by step, with visuals to guide you.
+> **Let the worker bid when your program needs a cache slot.** Automated bidding and auto-activation have separate controls and share the same Gas Tank.
 
----
+## **Step 1: Fund your balance**
 
-## **⚙️ Bid Automation**
+Deposit ETH through the [Gas Tank](gas-tank.md) if your available balance is insufficient. Depositing and saving a configuration are separate actions.
 
-Automated bidding keeps your contract cached without manual intervention.
-To get started, go to **My Contracts** and select the contract you want to automate.
+## **Step 2: Set the maximum bid**
 
-<figure markdown="span">
-  ![Bid Automation Section](./assets/bid-automation.png){ width="600" }
-</figure>
-
-Enter the amount of ETH to deposit into the automation balance.
-This balance will be used to place bids automatically on your behalf.
-You can enter `0` if you prefer to fund it later (via the **Gas Tank** in the navbar) or if your balance already has sufficient funds.
-
-Define the highest amount the system is allowed to bid on your behalf.
-
-Click “Set Automation”. Once confirmed, your contract will auto-bid to maintain its position.
+In **My Contracts**, open the program's **Cache** tab and expand **Automated Bidding Configuration**. Enter **Maximum Bid Amount**, read the experimental-feature acknowledgement, and select the setup or update action shown for the current registration.
 
 <figure markdown="span">
-  ![Bid Automation Config](./assets/bid-automation-config.png){ width="600" }
+  ![Automated bidding configuration with a per-bid maximum of 0.001 ETH in the recorded example.](../../../tutorials/assets/cache-platform-04-auto-config.png){ width="700" }
 </figure>
 
-When your configuration meets the bidding conditions,
-the backend will trigger the Cache Manager Automation (CMA) contract to place a bid on your behalf.
-The bid amount will be deducted from your automation balance, and your contract will be cached automatically.
+The maximum is a **per-bid ceiling**, not the amount the worker must spend or a total budget. CMA enforces a minimum allowed maximum (`minMaxBidAmount`), including when bidding is disabled. This configuration floor differs from the current auction minimum, which can be zero.
+
+Confirm the wallet transaction. If automation still reads **Disabled**, select **Enable** and confirm that transaction too. Saving a maximum and enabling bidding can require separate confirmations.
+
+## **Step 3: Verify the enabled state**
 
 <figure markdown="span">
-  ![Bid Automation Set](./assets/bid-automation-completed.png){ width="400" }
+  ![The demo contract with automated bidding enabled and a funded balance.](../../../tutorials/assets/cache-platform-05-auto-enabled.png){ width="700" }
 </figure>
 
-You can view your automation balance in the **Automation** tab or under the **Gas Tank** section in the navbar.
+Check **Enabled**, the saved maximum, and the remaining balance. Changing bidding settings preserves the contract's auto-activation settings.
+
+No immediate bid is expected if the program is already cached. The worker can also skip a contract when it is inactive, the required bid exceeds the maximum, the balance is insufficient, or the deployment's bidding worker is disabled.
+
+## **Step 4: Monitor recovery**
+
+After eviction, a successful automated bid appears in **Bid History** and the status returns to **Cached**.
 
 <figure markdown="span">
-  ![Bid Automation Gas Tank](./assets/bid-automation-gas-tank.png){ width="400" }
+  ![The same local demo re-cached automatically after a controlled eviction.](../../../tutorials/assets/cache-platform-07-auto-recached.png){ width="700" }
 </figure>
 
----
+To stop automated bidding, use **Disable** and confirm. This leaves auto-activation independent. Removing the on-chain CMA registration removes both configurations; removing an item from **My Contracts** only removes the saved list entry.
+
+See [Cache Bid Automation](../../../deep-dive/bid-automations.md) for selection rules and [the v2 release notes](../../../releases/stylus-manager-v2.md#contract-audit) for the published audit and the older acknowledgement wording visible in snapshots.

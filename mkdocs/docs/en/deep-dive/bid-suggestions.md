@@ -98,25 +98,25 @@ The following cache metrics influence bid suggestions:
 Suppose your contract has a minimum bid of `1,000,000 wei` and current cache conditions are:
 
 - **Utilization**: 80% (0.8)
-- **Eviction Rate**: 2 evictions/day (0.2)
+- **Eviction Rate**: 2 evictions/day
 - **Competitiveness**: 0.32
 
 **Calculation:**
 
 ```
 utilizationFactor = 1 + 0.8 = 1.8
-evictionFactor = 1 + min(0.2/10, 0.5) = 1.02
+evictionFactor = 1 + min(2/10, 0.5) = 1.2
 competitivenessFactor = 1 + 0.32 = 1.32
 
-combinedAdjustment = (1.8 * 0.5) + (1.02 * 0.3) + (1.32 * 0.2)
-                   = 0.9 + 0.306 + 0.264 = 1.47
+combinedAdjustment = (1.8 * 0.5) + (1.2 * 0.3) + (1.32 * 0.2)
+                   = 0.9 + 0.36 + 0.264 = 1.524
 ```
 
 **Suggested Bids:**
 
 - **High Risk**: `1,000,000 wei` (minimum bid)
-- **Mid Risk**: `1,000,000 * 1.5 * 1.47 = 2,205,000 wei`
-- **Low Risk**: `1,000,000 * 2.5 * 1.47 = 3,675,000 wei`
+- **Mid Risk**: `1,000,000 * 1.5 * 1.524 = 2,286,000 wei`
+- **Low Risk**: `1,000,000 * 2.5 * 1.524 = 3,810,000 wei`
 
 ---
 
@@ -131,10 +131,12 @@ When your contract is not yet in the cache, the system shows only suggested bids
 When your contract is already cached, suggested bids are used to:
 
 - Assess your current eviction risk
-- Recommend rebidding amounts if your effective bid is too low
+- Plan the next bid if the codehash is evicted; manual bids remain disabled while cached
 - Compare your position against current market conditions
 
 ---
+
+Suggested levels describe relative auction pressure, not a guaranteed duration or probability. They do not control activation status. The [automation strategy](bid-automations.md) calculates its own bids within the user's on-chain limit.
 
 ## **Best Practices**
 

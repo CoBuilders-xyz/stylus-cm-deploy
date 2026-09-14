@@ -1,41 +1,23 @@
 # **Deep Dive Overview**
 
-The Stylus Cache Manager frontend provides a user-friendly interface for interacting with the underlying cache bidding system, enhanced with additional features like automated bidding and monitoring alerts. These tools help you manage your contract's cache status more effectively than direct contract interaction.
+Stylus Manager combines two workflows with different failure modes: activation determines whether the program can execute, while caching affects the cost of repeated calls. Monitor both independently.
 
 ---
 
-## **Why These Topics Matter**
+## **⚡ Activation**
 
-Without proper cache management, your contract risks eviction, leading to slower execution and higher gas costs. While the bidding system itself doesn't prevent eviction, understanding how to use these tools effectively - especially automation - can help maintain your cache position.
+Read [Activation Lifecycle](activation-lifecycle.md) for status interpretation, manual activation, automated reactivation, refunds, retry behavior, and history.
 
----
+## **💰 Caching**
 
-## **Essential Concepts**
+- [Effective Bid](effective-bid.md): how the auction accounts for time decay.
+- [Bid Suggestions](bid-suggestions.md): how cache conditions affect suggested amounts.
+- [Eviction Risk](eviction-risk.md): how the UI compares an existing entry with current thresholds.
+- [Place Bid](place-bid.md): the direct wallet transaction and its result.
+- [Cache Bid Automation](bid-automations.md): selection, independent settings, and spending controls.
 
-### **[Effective Bid](effective-bid.md)**
+## **⛽ Shared automation funding**
 
-Your bid's real-time value after time-based decay. This determines whether your contract stays cached or gets evicted.
+CMA keeps separate `biddingEnabled` and `autoActivate` controls per registered contract. Both operations use the same per-user escrow on that deployment. A bid can leave too little balance for reactivation, so track the [Gas Tank](../getting-started/stylus-cache-manager-ui/tutorials/gas-tank.md) alongside contract status.
 
-### **[Bid Suggestions](bid-suggestions.md)**
-
-Smart recommendations for bid amounts based on three risk levels: High , Mid , and Low multipliers.
-
-### **[Eviction Risk](eviction-risk.md)**
-
-Real-time assessment of your contract's likelihood of eviction, helping you take action before it's too late.
-
-### **[Place Bid](place-bid.md)**
-
-Direct wallet interaction with the CacheManager contract to secure cache slots for your contracts.
-
-### **[Bid Automations](bid-automations.md)**
-
-Automated bidding system that monitors cache conditions and places bids for you, eliminating manual management.
-
----
-
-## **Start Here**
-
-New to cache bidding? Begin with **[Effective Bid](effective-bid.md)** to understand how the decay system works, then explore **[Bid Suggestions](bid-suggestions.md)** to learn optimal bidding strategies.
-
-Already familiar with manual bidding? Jump to **[Bid Automations](bid-automations.md)** to set up automated cache management.
+The v2 ABI and migration changes are described in [What's New in v2](../releases/stylus-manager-v2.md).

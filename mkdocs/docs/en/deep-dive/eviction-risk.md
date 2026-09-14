@@ -16,6 +16,8 @@ Eviction risk is a measure of how vulnerable your cached contract is to being re
 
 ---
 
+Risk levels are relative comparisons, not measured probabilities or guarantees. Activation expiry is monitored separately in the [Activation tab](activation-lifecycle.md).
+
 ## **Risk Levels Explained**
 
 ### **🔴 High Risk**
@@ -160,9 +162,9 @@ effectiveBid (1,280,000) < midRisk (1,800,000)
 
 Set up alerts to be notified when your contract is actually evicted from the cache, allowing you to respond quickly.
 
-### **Bid Automation**
+### **Cache Bid Automation**
 
-Enable automated bidding to maintain your cache position without manual intervention. This is the most effective way to manage eviction risk.
+Enable automated bidding to attempt re-caching after eviction. It does not bid while the program is already cached and does not prevent every eviction.
 
 ### **Regular Monitoring**
 
@@ -174,4 +176,4 @@ Use the dashboard to track your contract's risk level and effective bid decay ov
 
 - [Effective Bid](effective-bid.md) - Understanding how your bid decays
 - [Bid Suggestions](bid-suggestions.md) - Recommended bid amounts
-- [Bid Automations](bid-automations.md) - Automated risk management
+- [Cache Bid Automation](bid-automations.md) - Automated risk management

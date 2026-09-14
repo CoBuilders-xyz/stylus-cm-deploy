@@ -1,7 +1,11 @@
+!!! info "Archived documentation"
+
+    This page is retained as historical reference. For the current Stylus Manager release, use the [activation, caching, and deployment guides](../../index.md). Commands and architecture in archived notes may describe earlier versions.
+
 # 🚀 Deploy and Cache Contracts
 
 !!! info "🛠 Setting Up Environment Variables"
-Before proceeding, ensure you've properly set up the environment variables as outlined in the [Cache Manager Interactions](/getting-started/03-cacheManagerInteractions) section.
+Before proceeding, ensure you've properly set up the environment variables as outlined in the [CacheManager Interactions](03-cacheManagerInteractions.md) section.
 
 ## ⚙️ Deploy and Cache with Stylus-CLI
 
