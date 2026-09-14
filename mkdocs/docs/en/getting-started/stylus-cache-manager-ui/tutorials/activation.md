@@ -34,7 +34,7 @@ Open the saved contract and choose **Activation**. Verify **Active** and the rem
 
 ## **Reactivate an existing contract**
 
-When the tab reports **Activation expired** or **Needs upgrade to current Stylus version**, use **Activate now** again. A mobile contract's **Activate** action opens this tab directly.
+When the tab reports **Activation expired** or **Needs upgrade to current Stylus version**, use **Activate now** again. In **My Contracts**, select the saved contract and open **Activation** to find this action.
 
 <figure markdown="span">
   ![An expired program with the manual activation action available.](../../../tutorials/assets/activation-platform-08-manual-expired.png){ width="700" }
