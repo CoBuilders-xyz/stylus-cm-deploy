@@ -50,14 +50,18 @@ git submodule update --init --recursive
 The repository records exact submodule commits for reproducible checkouts. To deliberately update to the latest merged release, start with clean submodules and run:
 
 ```bash
-git pull --ff-only origin main
-for module in stylus-cm-contracts stylus-cm-backend stylus-cm-frontend stylus-cm-nginx; do
-  git -C "submodules/$module" switch main || break
-  git -C "submodules/$module" pull --ff-only origin main || break
-done
-git -C submodules/nitro-testnode switch release
-git -C submodules/nitro-testnode pull --ff-only origin release
+(
+  git pull --ff-only origin main || exit 1
+  for module in stylus-cm-contracts stylus-cm-backend stylus-cm-frontend stylus-cm-nginx; do
+    git -C "submodules/$module" switch main || exit 1
+    git -C "submodules/$module" pull --ff-only origin main || exit 1
+  done
+  git -C submodules/nitro-testnode switch release || exit 1
+  git -C submodules/nitro-testnode pull --ff-only origin release || exit 1
+)
 ```
+
+The subshell stops on the first failed command and returns a nonzero status without closing your terminal shell.
 
 Nitro uses this fork's `release` branch; the four Stylus Manager submodules use `main`. Record updated submodule pointers in the parent repository when preparing a release.
 
