@@ -203,10 +203,14 @@ sudo usermod -aG docker ubuntu
 
   log "Installing Foundry (cast)..."
   run_in_vm '
-if ! command -v ~/.foundry/bin/cast >/dev/null 2>&1; then
-  curl -L https://foundry.paradigm.xyz 2>/dev/null | bash 2>/dev/null
-  ~/.foundry/bin/foundryup 2>&1 | tail -1
+# This separate shell does not inherit strict mode from the host script.
+set -euo pipefail
+export FOUNDRY_DIR="$HOME/.foundry"
+if [[ ! -x "$FOUNDRY_DIR/bin/cast" ]]; then
+  curl -fsSL --retry 3 https://foundry.paradigm.xyz | bash
+  "$FOUNDRY_DIR/bin/foundryup"
 fi
+"$FOUNDRY_DIR/bin/cast" --version
 '
 
   log "Cloning nitro-devnode (for StylusDeployer bytecode)..."
@@ -235,6 +239,10 @@ fi
 cmd_init() {
   require_cmd multipass
   ensure_vm_running
+
+  # Check the VM installation before removing the existing chain container.
+  run_in_vm '"$HOME/.foundry/bin/cast" --version' || \
+    die "Foundry cast is unavailable in the VM. Run '$0 setup' and check the installation output."
 
   log "Initializing devnode (this resets chain state)..."
 
